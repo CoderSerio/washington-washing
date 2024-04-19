@@ -2,7 +2,18 @@
   "pages": [
     //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
     {
-      "path": "pages/index/index",
+      "path": "pages/before-login/index",
+      "style": {
+        "navigationBarTitleText": "uni-app",
+        // #ifdef MP-WEIXIN
+        "usingComponents": {
+          "ant-button": "/wxcomponents/miniprogram_npm/antd-mini/Button/index"
+        }
+        // #endif
+      }
+    },
+    {
+      "path": "pages/after-login/index",
       "style": {
         "navigationBarTitleText": "uni-app",
         // #ifdef MP-WEIXIN
