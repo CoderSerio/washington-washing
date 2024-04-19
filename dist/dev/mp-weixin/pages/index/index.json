@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "uni-app",
-  "usingComponents": {
-    "ant-button": "../../wxcomponents/miniprogram_npm/antd-mini/Button/index"
-  }
-}

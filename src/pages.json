@@ -1,26 +1,21 @@
 {
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue"
+    }
+  },
   "pages": [
-    //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
     {
       "path": "pages/before-login/index",
       "style": {
-        "navigationBarTitleText": "uni-app",
-        // #ifdef MP-WEIXIN
-        "usingComponents": {
-          "ant-button": "/wxcomponents/miniprogram_npm/antd-mini/Button/index"
-        }
-        // #endif
+        "navigationBarTitleText": "uni-app"
       }
     },
     {
       "path": "pages/after-login/index",
       "style": {
-        "navigationBarTitleText": "uni-app",
-        // #ifdef MP-WEIXIN
-        "usingComponents": {
-          "ant-button": "/wxcomponents/miniprogram_npm/antd-mini/Button/index"
-        }
-        // #endif
+        "navigationBarTitleText": "uni111"
       }
     }
   ],
@@ -29,5 +24,20 @@
     "navigationBarTitleText": "uni-app",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#3cc51f",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/before-login/index",
+        "text": "登录页面"
+      },
+      {
+        "pagePath": "pages/after-login/index",
+        "text": "登录后的页面"
+      }
+    ]
   }
 }
