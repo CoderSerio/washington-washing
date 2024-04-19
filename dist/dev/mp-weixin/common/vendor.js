@@ -144,6 +144,37 @@ function normalizeClass(value) {
   }
   return res.trim();
 }
+const toDisplayString = (val) => {
+  return isString$1(val) ? val : val == null ? "" : isArray$1(val) || isObject(val) && (val.toString === objectToString || !isFunction(val.toString)) ? JSON.stringify(val, replacer, 2) : String(val);
+};
+const replacer = (_key, val) => {
+  if (val && val.__v_isRef) {
+    return replacer(_key, val.value);
+  } else if (isMap(val)) {
+    return {
+      [`Map(${val.size})`]: [...val.entries()].reduce(
+        (entries, [key, val2], i) => {
+          entries[stringifySymbol(key, i) + " =>"] = val2;
+          return entries;
+        },
+        {}
+      )
+    };
+  } else if (isSet(val)) {
+    return {
+      [`Set(${val.size})`]: [...val.values()].map((v) => stringifySymbol(v))
+    };
+  } else if (isSymbol(val)) {
+    return stringifySymbol(val);
+  } else if (isObject(val) && !isArray$1(val) && !isPlainObject(val)) {
+    return String(val);
+  }
+  return val;
+};
+const stringifySymbol = (v, i = "") => {
+  var _a2;
+  return isSymbol(v) ? `Symbol(${(_a2 = v.description) != null ? _a2 : i})` : v;
+};
 const LINEFEED = "\n";
 const SLOT_DEFAULT_NAME = "d";
 const ON_SHOW = "onShow";
@@ -486,9 +517,9 @@ function assertType$1(value, type) {
   let valid;
   const expectedType = getType$2(type);
   if (isSimpleType$1(expectedType)) {
-    const t = typeof value;
-    valid = t === expectedType.toLowerCase();
-    if (!valid && t === "object") {
+    const t2 = typeof value;
+    valid = t2 === expectedType.toLowerCase();
+    if (!valid && t2 === "object") {
       valid = value instanceof type;
     }
   } else if (expectedType === "Object") {
@@ -2473,8 +2504,8 @@ function triggerRefValue(ref2, newVal) {
     }
   }
 }
-function isRef(r) {
-  return !!(r && r.__v_isRef === true);
+function isRef(r2) {
+  return !!(r2 && r2.__v_isRef === true);
 }
 function ref(value) {
   return createRef(value, false);
@@ -4063,7 +4094,7 @@ function createWatcher(raw, ctx, publicThis, key) {
     watch(getter, raw.bind(publicThis));
   } else if (isObject(raw)) {
     if (isArray$1(raw)) {
-      raw.forEach((r) => createWatcher(r, ctx, publicThis, key));
+      raw.forEach((r2) => createWatcher(r2, ctx, publicThis, key));
     } else {
       const handler = isFunction(raw.handler) ? raw.handler.bind(publicThis) : ctx[raw.handler];
       if (isFunction(handler)) {
@@ -4475,7 +4506,7 @@ function isSameType(a, b) {
 }
 function getTypeIndex(type, expectedTypes) {
   if (isArray$1(expectedTypes)) {
-    return expectedTypes.findIndex((t) => isSameType(t, type));
+    return expectedTypes.findIndex((t2) => isSameType(t2, type));
   } else if (isFunction(expectedTypes)) {
     return isSameType(expectedTypes, type) ? 0 : -1;
   }
@@ -4523,9 +4554,9 @@ function assertType(value, type) {
   let valid;
   const expectedType = getType$1(type);
   if (isSimpleType(expectedType)) {
-    const t = typeof value;
-    valid = t === expectedType.toLowerCase();
-    if (!valid && t === "object") {
+    const t2 = typeof value;
+    valid = t2 === expectedType.toLowerCase();
+    if (!valid && t2 === "object") {
       valid = value instanceof type;
     }
   } else if (expectedType === "Object") {
@@ -5327,21 +5358,21 @@ function findComponentPublicInstance(mpComponents, id) {
   }
   return null;
 }
-function setTemplateRef({ r, f }, refValue, setupState) {
-  if (isFunction(r)) {
-    r(refValue, {});
+function setTemplateRef({ r: r2, f: f2 }, refValue, setupState) {
+  if (isFunction(r2)) {
+    r2(refValue, {});
   } else {
-    const _isString = isString$1(r);
-    const _isRef = isRef(r);
+    const _isString = isString$1(r2);
+    const _isRef = isRef(r2);
     if (_isString || _isRef) {
-      if (f) {
+      if (f2) {
         if (!_isRef) {
           return;
         }
-        if (!isArray$1(r.value)) {
-          r.value = [];
+        if (!isArray$1(r2.value)) {
+          r2.value = [];
         }
-        const existing = r.value;
+        const existing = r2.value;
         if (existing.indexOf(refValue) === -1) {
           existing.push(refValue);
           if (!refValue) {
@@ -5350,16 +5381,16 @@ function setTemplateRef({ r, f }, refValue, setupState) {
           onBeforeUnmount(() => remove(existing, refValue), refValue.$);
         }
       } else if (_isString) {
-        if (hasOwn(setupState, r)) {
-          setupState[r] = refValue;
+        if (hasOwn(setupState, r2)) {
+          setupState[r2] = refValue;
         }
-      } else if (isRef(r)) {
-        r.value = refValue;
+      } else if (isRef(r2)) {
+        r2.value = refValue;
       } else {
-        warnRef(r);
+        warnRef(r2);
       }
     } else {
-      warnRef(r);
+      warnRef(r2);
     }
   }
 }
@@ -5917,6 +5948,66 @@ function patchStopImmediatePropagation(e2, value) {
     return value;
   }
 }
+function vFor(source, renderItem) {
+  let ret;
+  if (isArray$1(source) || isString$1(source)) {
+    ret = new Array(source.length);
+    for (let i = 0, l = source.length; i < l; i++) {
+      ret[i] = renderItem(source[i], i, i);
+    }
+  } else if (typeof source === "number") {
+    if (!Number.isInteger(source)) {
+      warn(`The v-for range expect an integer value but got ${source}.`);
+      return [];
+    }
+    ret = new Array(source);
+    for (let i = 0; i < source; i++) {
+      ret[i] = renderItem(i + 1, i, i);
+    }
+  } else if (isObject(source)) {
+    if (source[Symbol.iterator]) {
+      ret = Array.from(source, (item, i) => renderItem(item, i, i));
+    } else {
+      const keys = Object.keys(source);
+      ret = new Array(keys.length);
+      for (let i = 0, l = keys.length; i < l; i++) {
+        const key = keys[i];
+        ret[i] = renderItem(source[key], key, i);
+      }
+    }
+  } else {
+    ret = [];
+  }
+  return ret;
+}
+function renderSlot(name, props = {}, key) {
+  const instance = getCurrentInstance();
+  const { parent, isMounted, ctx: { $scope } } = instance;
+  const vueIds = ($scope.properties || $scope.props).uI;
+  if (!vueIds) {
+    return;
+  }
+  if (!parent && !isMounted) {
+    onMounted(() => {
+      renderSlot(name, props, key);
+    }, instance);
+    return;
+  }
+  const invoker = findScopedSlotInvoker(vueIds, instance);
+  if (invoker) {
+    invoker(name, props, key);
+  }
+}
+function findScopedSlotInvoker(vueId, instance) {
+  let parent = instance.parent;
+  while (parent) {
+    const invokers = parent.$ssi;
+    if (invokers && invokers[vueId]) {
+      return invokers[vueId];
+    }
+    parent = parent.parent;
+  }
+}
 function stringifyStyle(value) {
   if (isString$1(value)) {
     return value;
@@ -5934,9 +6025,12 @@ function stringify(styles) {
   return ret;
 }
 const o = (value, key) => vOn(value, key);
+const f = (source, renderItem) => vFor(source, renderItem);
+const r = (name, props, key) => renderSlot(name, props, key);
 const s = (value) => stringifyStyle(value);
 const e = (target, ...sources) => extend(target, ...sources);
 const n = (value) => normalizeClass(value);
+const t = (val) => toDisplayString(val);
 const p = (props) => renderProps(props);
 function createApp$1(rootComponent, rootProps = null) {
   rootComponent && (rootComponent.mpType = "app");
@@ -6799,12 +6893,21 @@ function encode(src, rfc4648 = false) {
   const b642 = _btoa(utob(src));
   return rfc4648 ? _mkUriSafe(b642) : b642;
 }
+const numericProp = [Number, String];
 const makeRequiredProp = (type) => ({
   type,
   required: true
 });
 const makeBooleanProp = (defaultVal) => ({
   type: Boolean,
+  default: defaultVal
+});
+const makeNumberProp = (defaultVal) => ({
+  type: Number,
+  default: defaultVal
+});
+const makeNumericProp = (defaultVal) => ({
+  type: numericProp,
   default: defaultVal
 });
 const makeStringProp = (defaultVal) => ({
@@ -6901,6 +7004,9 @@ const buttonProps = {
    */
   showMessageCard: Boolean
 };
+function addUnit(num) {
+  return Number.isNaN(Number(num)) ? num : `${num}px`;
+}
 function isObj(value) {
   return Object.prototype.toString.call(value) === "[object Object]" || typeof value === "object";
 }
@@ -6964,22 +7070,187 @@ const iconProps = {
    */
   classPrefix: makeStringProp("wd-icon")
 };
+const swiperProps = {
+  ...baseProps,
+  /**
+   * 是否自动播放轮播图
+   * 类型：boolean
+   * 默认值：true
+   */
+  autoplay: makeBooleanProp(true),
+  /**
+   * 当前轮播在哪一项（下标）
+   * 类型：number
+   * 默认值：0
+   */
+  current: makeNumberProp(0),
+  /**
+   * 轮播滑动方向，可选值：'horizontal'（水平）或'vertical'（垂直）
+   * 类型：string
+   * 默认值：'horizontal'
+   */
+  direction: makeStringProp("horizontal"),
+  /**
+   * 同时显示的滑块数量
+   * 类型：number
+   * 默认值：1
+   */
+  displayMultipleItems: makeNumberProp(1),
+  /**
+   * 滑动动画时长，单位为毫秒
+   * 类型：number
+   * 默认值：300
+   */
+  duration: makeNumberProp(300),
+  /**
+   * 指定 swiper 切换缓动动画类型
+   * 类型：string
+   * 默认值：'default'
+   */
+  easingFunction: makeStringProp("default"),
+  /**
+   * 轮播的高度
+   * 类型：number 或 string（数字或可转换为数字的字符串）
+   * 默认值：'192'
+   */
+  height: makeNumericProp("192"),
+  /**
+   * 轮播间隔时间，单位为毫秒
+   * 类型：number
+   * 默认值：5000
+   */
+  interval: makeNumberProp(5e3),
+  /**
+   * 图片列表，可以是一个图片对象数组或字符串数组
+   * 类型：array
+   * 默认值：空数组
+   */
+  list: {
+    type: Array,
+    default: () => []
+  },
+  /**
+   * 是否循环播放轮播图
+   * 类型：boolean
+   * 默认值：true
+   */
+  loop: makeBooleanProp(true),
+  /**
+   * 后边距
+   * 类型：number 或 string（数字或可转换为数字的字符串）
+   * 默认值：'0'
+   */
+  nextMargin: makeNumericProp("0"),
+  /**
+   * 页码信息展示位置，可选值：'bottom'（底部）等
+   * 类型：string
+   * 默认值：'bottom'
+   */
+  indicatorPosition: makeStringProp("bottom"),
+  /**
+   * 前边距
+   * 类型：number 或 string（数字或可转换为数字的字符串）
+   * 默认值：'0'
+   */
+  previousMargin: makeNumericProp("0"),
+  /**
+   * 是否应用边距到第一个、最后一个元素
+   * 类型：boolean
+   * 默认值：false
+   */
+  snapToEdge: makeBooleanProp(false),
+  /**
+   * 指示器全部配置，可以是布尔值或指示器配置对象
+   * 类型：boolean 或 object
+   * 默认值：true
+   */
+  indicator: {
+    type: [Boolean, Object],
+    default: true
+  },
+  /**
+   * 图片裁剪、缩放的模式
+   * 类型：string
+   * 默认值：'aspectFill'
+   */
+  imageMode: makeStringProp("aspectFill"),
+  /**
+   * 自定义指示器类名
+   * 类型：string
+   */
+  customIndicatorClass: makeStringProp(""),
+  /**
+   * 自定义图片类名
+   * 类型：string
+   */
+  customImageClass: makeStringProp(""),
+  /**
+   * 自定义上一个图片类名
+   * 类型：string
+   */
+  customPrevImageClass: makeStringProp(""),
+  /**
+   * 自定义下一个图片类名
+   * 类型：string
+   */
+  customNextImageClass: makeStringProp("")
+};
+const swiperNavprops = {
+  ...baseProps,
+  /**
+   * 当前轮播在哪一项（下标）
+   */
+  current: makeNumberProp(0),
+  /**
+   * 轮播滑动方向，包括横向滑动和纵向滑动两个方向
+   */
+  direction: makeStringProp("horizontal"),
+  /**
+   * 小于这个数字不会显示导航器
+   */
+  minShowNum: makeNumberProp(2),
+  /**
+   * 指示器位置
+   */
+  indicatorPosition: makeStringProp("bottom"),
+  /**
+   * 是否显示两侧的控制按钮
+   */
+  showControls: makeBooleanProp(false),
+  /**
+   * 总共的项数
+   */
+  total: makeNumberProp(0),
+  /**
+   * 指示器类型，点状(dots)、点条状(dots-bar)、分式(fraction)等
+   */
+  type: makeStringProp("dots")
+};
 exports._export_sfc = _export_sfc;
+exports.addUnit = addUnit;
 exports.buttonProps = buttonProps;
 exports.computed = computed;
 exports.createSSRApp = createSSRApp;
 exports.defineComponent = defineComponent;
 exports.e = e;
 exports.encode = encode;
+exports.f = f;
 exports.iconProps = iconProps;
+exports.isObj = isObj;
 exports.n = n;
 exports.o = o;
 exports.objToStyle = objToStyle;
 exports.onHide = onHide;
 exports.onLaunch = onLaunch;
 exports.onLoad = onLoad;
+exports.onMounted = onMounted;
 exports.onShow = onShow;
 exports.p = p;
+exports.r = r;
 exports.ref = ref;
 exports.s = s;
+exports.swiperNavprops = swiperNavprops;
+exports.swiperProps = swiperProps;
+exports.t = t;
+exports.unref = unref;
 exports.watch = watch;

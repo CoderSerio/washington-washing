@@ -7,15 +7,15 @@
   },
   "pages": [
     {
-      "path": "pages/before-login/index",
+      "path": "pages/after-login/index",
       "style": {
-        "navigationBarTitleText": "uni-app"
+        "navigationBarTitleText": "WASH 洗衣"
       }
     },
     {
-      "path": "pages/after-login/index",
+      "path": "pages/before-login/index",
       "style": {
-        "navigationBarTitleText": "uni111"
+        "navigationBarTitleText": "WASH 洗衣"
       }
     }
   ],

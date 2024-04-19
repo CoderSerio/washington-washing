@@ -12,5 +12,7 @@ declare module '@vue/runtime-core' {
     Tabbar: typeof import('./src/components/tabbar/index.vue')['default']
     WdButton: typeof import('wot-design-uni/components/wd-button/wd-button.vue')['default']
     WdIcon: typeof import('wot-design-uni/components/wd-icon/wd-icon.vue')['default']
+    WdSwiper: typeof import('wot-design-uni/components/wd-swiper/wd-swiper.vue')['default']
+    WdSwiperNav: typeof import('wot-design-uni/components/wd-swiper-nav/wd-swiper-nav.vue')['default']
   }
 }
