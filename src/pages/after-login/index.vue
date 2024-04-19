@@ -5,12 +5,16 @@
   <template v-else>
     <business></business>
   </template>
+  <view class="tabbar">
+    <tabbar></tabbar>
+  </view>
 </template>
 
 <script setup lang="ts">
 import user from "./user/index.vue";
 import business from "./business/index.vue";
 import { onMounted, ref } from "vue";
+import tabbar from "../../components/tabbar/index.vue";
 const title = ref("Hello");
 
 // 1用户、2商家
@@ -22,4 +26,10 @@ onMounted(() => {
 });
 </script>
 
-<style></style>
+<style scoped>
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+</style>

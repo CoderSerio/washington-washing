@@ -9,10 +9,15 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    404: typeof import('./src/components/404/index.vue')['default']
     Tabbar: typeof import('./src/components/tabbar/index.vue')['default']
+    WdBadge: typeof import('wot-design-uni/components/wd-badge/wd-badge.vue')['default']
+    WdButon: typeof import('wot-design-uni/components/wd-buton/wd-buton.vue')['default']
     WdButton: typeof import('wot-design-uni/components/wd-button/wd-button.vue')['default']
     WdIcon: typeof import('wot-design-uni/components/wd-icon/wd-icon.vue')['default']
     WdSwiper: typeof import('wot-design-uni/components/wd-swiper/wd-swiper.vue')['default']
     WdSwiperNav: typeof import('wot-design-uni/components/wd-swiper-nav/wd-swiper-nav.vue')['default']
+    WdTabbar: typeof import('wot-design-uni/components/wd-tabbar/wd-tabbar.vue')['default']
+    WdTabbarItem: typeof import('wot-design-uni/components/wd-tabbar-item/wd-tabbar-item.vue')['default']
   }
 }

@@ -36,12 +36,18 @@ const swiperList = ref([
   "https://unpkg.com/wot-design-uni-assets/meng.jpg",
 ]);
 
-function handleClick(e) {
+const props = defineProps<{
+  routeTo: (name: string) => void;
+}>();
+
+function handleClick(e: any) {
   console.log(e);
 }
-function onChange(e) {
+function onChange(e: any) {
   console.log(e);
 }
+
+props.routeTo;
 </script>
 
 <script lang="ts">
