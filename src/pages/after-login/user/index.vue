@@ -6,7 +6,7 @@
   <template v-else-if="routeName === 'order-publish'"> </template>
   <template v-else-if="routeName === 'order-list'"> </template>
   <template v-else-if="routeName === 'order-payment'"> </template>
-  <template v-else-if="routeName === 'order-profile'"> </template>
+  <template v-else-if="routeName === 'profile'"> </template>
 
   <template v-else>
     <notFound :routeTo="routeTo"></notFound>

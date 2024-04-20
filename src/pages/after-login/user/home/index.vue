@@ -19,7 +19,13 @@
       </view>
 
       <view class="right">
-        <wd-button :round="false" type="success">次要按钮</wd-button>
+        <wd-button
+          :round="false"
+          type="success"
+          @click="props.routeTo('order-list')"
+        >
+          我的订单
+        </wd-button>
       </view>
     </view>
   </view>
