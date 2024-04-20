@@ -1,21 +1,27 @@
 <template>
   <view class="page-wrapper">
-    <view class="title">WASH 洗衣</view>
-    <view class="buttons">
-      <wd-button block type="primary" @click="step = 'account-login'">
-        WASH 账号登录
-      </wd-button>
-      <wd-button block type="success" @click="step = 'weixin-login'">
-        微信登录
-      </wd-button>
-      <wd-button block type="info" @click="step = 'register'"> 注册 </wd-button>
-    </view>
+    <template v-if="step === 'init'">
+      <init :changeStep="changeStep"></init>
+    </template>
+
+    <template v-else-if="step === 'account-login'">
+      <accountLogin :changeStep="changeStep"></accountLogin>
+    </template>
+
+    <template v-else-if="step === 'weixin-login'"> </template>
+
+    <template v-else-if="step === 'register'">
+      <register :changeStep="changeStep"></register>
+    </template>
   </view>
 </template>
 
 <script setup lang="ts">
 import { onLoad } from "@dcloudio/uni-app";
 import { ref } from "vue";
+import init from "./init/index.vue";
+import register from "./register/index.vue";
+import accountLogin from "./wash-account-login/index.vue";
 
 onLoad(() => {
   console.log("onload");
@@ -27,8 +33,8 @@ const checkItems = ref({
   isWeixinBinding: false,
   isWashAccountBinding: false,
 });
-const changeStep = (name: Step) => {
-  step.value = name;
+const changeStep = (name: string) => {
+  step.value = name as Step;
 };
 </script>
 

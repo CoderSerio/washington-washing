@@ -34,12 +34,12 @@ const hasOwn = (val, key) => hasOwnProperty$1.call(val, key);
 const isArray$1 = Array.isArray;
 const isMap = (val) => toTypeString(val) === "[object Map]";
 const isSet = (val) => toTypeString(val) === "[object Set]";
-const isFunction = (val) => typeof val === "function";
+const isFunction$1 = (val) => typeof val === "function";
 const isString$1 = (val) => typeof val === "string";
 const isSymbol = (val) => typeof val === "symbol";
 const isObject = (val) => val !== null && typeof val === "object";
-const isPromise = (val) => {
-  return (isObject(val) || isFunction(val)) && isFunction(val.then) && isFunction(val.catch);
+const isPromise$1 = (val) => {
+  return (isObject(val) || isFunction$1(val)) && isFunction$1(val.then) && isFunction$1(val.catch);
 };
 const objectToString = Object.prototype.toString;
 const toTypeString = (value) => objectToString.call(value);
@@ -145,7 +145,7 @@ function normalizeClass(value) {
   return res.trim();
 }
 const toDisplayString = (val) => {
-  return isString$1(val) ? val : val == null ? "" : isArray$1(val) || isObject(val) && (val.toString === objectToString || !isFunction(val.toString)) ? JSON.stringify(val, replacer, 2) : String(val);
+  return isString$1(val) ? val : val == null ? "" : isArray$1(val) || isObject(val) && (val.toString === objectToString || !isFunction$1(val.toString)) ? JSON.stringify(val, replacer, 2) : String(val);
 };
 const replacer = (_key, val) => {
   if (val && val.__v_isRef) {
@@ -330,7 +330,7 @@ const MINI_PROGRAM_PAGE_RUNTIME_HOOKS = /* @__PURE__ */ (() => {
   };
 })();
 function isUniLifecycleHook(name, value, checkType = true) {
-  if (checkType && !isFunction(value)) {
+  if (checkType && !isFunction$1(value)) {
     return false;
   }
   if (UniLifecycleHooks.indexOf(name) > -1) {
@@ -353,7 +353,7 @@ function invokeCreateVueAppHook(app) {
   createVueAppHooks.forEach((hook) => hook(app));
 }
 const invokeCreateErrorHandler = once((app, createErrorHandler2) => {
-  if (isFunction(app._component.onError)) {
+  if (isFunction$1(app._component.onError)) {
     return createErrorHandler2(app);
   }
 });
@@ -416,12 +416,12 @@ function include(str, parts) {
 function startsWith(str, parts) {
   return parts.find((part) => str.indexOf(part) === 0);
 }
-function normalizeLocale(locale, messages) {
+function normalizeLocale(locale, messages2) {
   if (!locale) {
     return;
   }
   locale = locale.trim().replace(/_/g, "-");
-  if (messages && messages[locale]) {
+  if (messages2 && messages2[locale]) {
     return locale;
   }
   locale = locale.toLowerCase();
@@ -441,12 +441,12 @@ function normalizeLocale(locale, messages) {
     return LOCALE_ZH_HANS;
   }
   let locales = [LOCALE_EN, LOCALE_FR, LOCALE_ES];
-  if (messages && Object.keys(messages).length > 0) {
-    locales = Object.keys(messages);
+  if (messages2 && Object.keys(messages2).length > 0) {
+    locales = Object.keys(messages2);
   }
-  const lang = startsWith(locale, locales);
-  if (lang) {
-    return lang;
+  const lang2 = startsWith(locale, locales);
+  if (lang2) {
+    return lang2;
   }
 }
 function getBaseSystemInfo() {
@@ -609,7 +609,7 @@ function getApiCallbacks(args) {
   const apiCallbacks = {};
   for (const name in args) {
     const fn = args[name];
-    if (isFunction(fn)) {
+    if (isFunction$1(fn)) {
       apiCallbacks[name] = tryCatch(fn);
       delete args[name];
     }
@@ -627,16 +627,16 @@ function createAsyncApiCallback(name, args = {}, { beforeAll, beforeSuccess } = 
     args = {};
   }
   const { success, fail, complete } = getApiCallbacks(args);
-  const hasSuccess = isFunction(success);
-  const hasFail = isFunction(fail);
-  const hasComplete = isFunction(complete);
+  const hasSuccess = isFunction$1(success);
+  const hasFail = isFunction$1(fail);
+  const hasComplete = isFunction$1(complete);
   const callbackId = invokeCallbackId++;
   addInvokeCallback(callbackId, name, (res) => {
     res = res || {};
     res.errMsg = normalizeErrMsg$1(res.errMsg, name);
-    isFunction(beforeAll) && beforeAll(res);
+    isFunction$1(beforeAll) && beforeAll(res);
     if (res.errMsg === name + ":ok") {
-      isFunction(beforeSuccess) && beforeSuccess(res, args);
+      isFunction$1(beforeSuccess) && beforeSuccess(res, args);
       hasSuccess && success(res);
     } else {
       hasFail && fail(res);
@@ -663,7 +663,7 @@ function queue$1(hooks, data, params) {
       promise = Promise.resolve(wrapperHook(hook, params));
     } else {
       const res = hook(data, params);
-      if (isPromise(res)) {
+      if (isPromise$1(res)) {
         promise = Promise.resolve(res);
       }
       if (res === false) {
@@ -693,7 +693,7 @@ function wrapperOptions(interceptors2, options = {}) {
     const oldCallback = options[name];
     options[name] = function callbackInterceptor(res) {
       queue$1(hooks, res, options).then((res2) => {
-        return isFunction(oldCallback) && oldCallback(res2) || res2;
+        return isFunction$1(oldCallback) && oldCallback(res2) || res2;
       });
     };
   });
@@ -745,7 +745,7 @@ function invokeApi(method, api, options, params) {
   return api(options, ...params);
 }
 function hasCallback(args) {
-  if (isPlainObject(args) && [API_SUCCESS, API_FAIL, API_COMPLETE].find((cb) => isFunction(args[cb]))) {
+  if (isPlainObject(args) && [API_SUCCESS, API_FAIL, API_COMPLETE].find((cb) => isFunction$1(args[cb]))) {
     return true;
   }
   return false;
@@ -773,7 +773,7 @@ function formatApiArgs(args, options) {
   for (let i = 0; i < keys.length; i++) {
     const name = keys[i];
     const formatterOrDefaultValue = formatArgs[name];
-    if (isFunction(formatterOrDefaultValue)) {
+    if (isFunction$1(formatterOrDefaultValue)) {
       const errMsg = formatterOrDefaultValue(args[0][name], params);
       if (isString$1(errMsg)) {
         return errMsg;
@@ -906,7 +906,7 @@ const AddInterceptorProtocol = [
 const RemoveInterceptorProtocol = AddInterceptorProtocol;
 function mergeInterceptorHook(interceptors2, interceptor) {
   Object.keys(interceptor).forEach((hook) => {
-    if (isFunction(interceptor[hook])) {
+    if (isFunction$1(interceptor[hook])) {
       interceptors2[hook] = mergeHook(interceptors2[hook], interceptor[hook]);
     }
   });
@@ -918,7 +918,7 @@ function removeInterceptorHook(interceptors2, interceptor) {
   Object.keys(interceptor).forEach((name) => {
     const hooks = interceptors2[name];
     const hook = interceptor[name];
-    if (isArray$1(hooks) && isFunction(hook)) {
+    if (isArray$1(hooks) && isFunction$1(hook)) {
       remove(hooks, hook);
     }
   });
@@ -1123,11 +1123,11 @@ function promisify(name, api) {
   if (!shouldPromise(name)) {
     return api;
   }
-  if (!isFunction(api)) {
+  if (!isFunction$1(api)) {
     return api;
   }
   return function promiseApi(options = {}, ...rest) {
-    if (isFunction(options.success) || isFunction(options.fail) || isFunction(options.complete)) {
+    if (isFunction$1(options.success) || isFunction$1(options.fail) || isFunction$1(options.complete)) {
       return wrapperReturnValue(name, invokeApi(name, api, options, rest));
     }
     return wrapperReturnValue(name, handlePromise(new Promise((resolve, reject) => {
@@ -1148,13 +1148,13 @@ function initWrapper(protocols2) {
   function processArgs(methodName, fromArgs, argsOption = {}, returnValue = {}, keepFromArgs = false) {
     if (isPlainObject(fromArgs)) {
       const toArgs = keepFromArgs === true ? fromArgs : {};
-      if (isFunction(argsOption)) {
+      if (isFunction$1(argsOption)) {
         argsOption = argsOption(fromArgs, toArgs) || {};
       }
       for (const key in fromArgs) {
         if (hasOwn(argsOption, key)) {
           let keyOption = argsOption[key];
-          if (isFunction(keyOption)) {
+          if (isFunction$1(keyOption)) {
             keyOption = keyOption(fromArgs[key], fromArgs, toArgs);
           }
           if (!keyOption) {
@@ -1166,7 +1166,7 @@ function initWrapper(protocols2) {
           }
         } else if (CALLBACKS.indexOf(key) !== -1) {
           const callback = fromArgs[key];
-          if (isFunction(callback)) {
+          if (isFunction$1(callback)) {
             toArgs[key] = processCallback(methodName, callback, returnValue);
           }
         } else {
@@ -1176,13 +1176,13 @@ function initWrapper(protocols2) {
         }
       }
       return toArgs;
-    } else if (isFunction(fromArgs)) {
+    } else if (isFunction$1(fromArgs)) {
       fromArgs = processCallback(methodName, fromArgs, returnValue);
     }
     return fromArgs;
   }
   function processReturnValue(methodName, res, returnValue, keepReturnValue = false) {
-    if (isFunction(protocols2.returnValue)) {
+    if (isFunction$1(protocols2.returnValue)) {
       res = protocols2.returnValue(methodName, res);
     }
     return processArgs(methodName, res, returnValue, {}, keepReturnValue);
@@ -1199,7 +1199,7 @@ function initWrapper(protocols2) {
     }
     return function(arg1, arg2) {
       let options = protocol;
-      if (isFunction(protocol)) {
+      if (isFunction$1(protocol)) {
         options = protocol(arg1);
       }
       arg1 = processArgs(methodName, arg1, options.args, options.returnValue);
@@ -1216,14 +1216,14 @@ function initWrapper(protocols2) {
   };
 }
 const getLocale = () => {
-  const app = isFunction(getApp) && getApp({ allowDefault: true });
+  const app = isFunction$1(getApp) && getApp({ allowDefault: true });
   if (app && app.$vm) {
     return app.$vm.$locale;
   }
   return normalizeLocale(wx.getSystemInfoSync().language) || LOCALE_EN;
 };
 const setLocale = (locale) => {
-  const app = isFunction(getApp) && getApp();
+  const app = isFunction$1(getApp) && getApp();
   if (!app) {
     return false;
   }
@@ -1505,14 +1505,14 @@ function initGetProvider(providers) {
         service,
         provider: providers[service]
       };
-      isFunction(success) && success(res);
+      isFunction$1(success) && success(res);
     } else {
       res = {
         errMsg: "getProvider:fail:服务[" + service + "]不存在"
       };
-      isFunction(fail) && fail(res);
+      isFunction$1(fail) && fail(res);
     }
-    isFunction(complete) && complete(res);
+    isFunction$1(complete) && complete(res);
   };
 }
 const objectKeys = [
@@ -2594,7 +2594,7 @@ _a = "__v_isReadonly";
 function computed$1(getterOrOptions, debugOptions, isSSR = false) {
   let getter;
   let setter;
-  const onlyGetter = isFunction(getterOrOptions);
+  const onlyGetter = isFunction$1(getterOrOptions);
   if (onlyGetter) {
     getter = getterOrOptions;
     setter = () => {
@@ -2697,7 +2697,7 @@ function formatProp(key, value, raw) {
   } else if (isRef(value)) {
     value = formatProp(key, toRaw(value.value), true);
     return raw ? value : [`${key}=Ref<`, value, `>`];
-  } else if (isFunction(value)) {
+  } else if (isFunction$1(value)) {
     return [`${key}=fn${value.name ? `<${value.name}>` : ``}`];
   } else {
     value = toRaw(value);
@@ -2832,9 +2832,9 @@ function callWithErrorHandling(fn, instance, type, args) {
   return res;
 }
 function callWithAsyncErrorHandling(fn, instance, type, args) {
-  if (isFunction(fn)) {
+  if (isFunction$1(fn)) {
     const res = callWithErrorHandling(fn, instance, type, args);
-    if (res && isPromise(res)) {
+    if (res && isPromise$1(res)) {
       res.catch((err) => {
         handleError(err, instance, type);
       });
@@ -3158,7 +3158,7 @@ function emit(instance, event, ...rawArgs) {
         }
       } else {
         const validator = emitsOptions[event];
-        if (isFunction(validator)) {
+        if (isFunction$1(validator)) {
           const isValid = validator(...rawArgs);
           if (!isValid) {
             warn(`Invalid event arguments: event validation failed for event "${event}".`);
@@ -3218,7 +3218,7 @@ function normalizeEmitsOptions(comp, appContext, asMixin = false) {
   const raw = comp.emits;
   let normalized = {};
   let hasExtends = false;
-  if (!isFunction(comp)) {
+  if (!isFunction$1(comp)) {
     const extendEmits = (raw2) => {
       const normalizedFromExtend = normalizeEmitsOptions(raw2, appContext, true);
       if (normalizedFromExtend) {
@@ -3290,7 +3290,7 @@ function inject(key, defaultValue, treatDefaultAsFactory = false) {
     if (provides && key in provides) {
       return provides[key];
     } else if (arguments.length > 1) {
-      return treatDefaultAsFactory && isFunction(defaultValue) ? defaultValue.call(instance.proxy) : defaultValue;
+      return treatDefaultAsFactory && isFunction$1(defaultValue) ? defaultValue.call(instance.proxy) : defaultValue;
     } else {
       warn(`injection "${String(key)}" not found.`);
     }
@@ -3300,7 +3300,7 @@ function inject(key, defaultValue, treatDefaultAsFactory = false) {
 }
 const INITIAL_WATCHER_VALUE = {};
 function watch(source, cb, options) {
-  if (!isFunction(cb)) {
+  if (!isFunction$1(cb)) {
     warn(`\`watch(fn, options?)\` signature has been moved to a separate API. Use \`watchEffect(fn, options?)\` instead. \`watch\` now only supports \`watch(source, cb, options?) signature.`);
   }
   return doWatch(source, cb, options);
@@ -3335,7 +3335,7 @@ function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EM
         return s2.value;
       } else if (isReactive(s2)) {
         return traverse(s2);
-      } else if (isFunction(s2)) {
+      } else if (isFunction$1(s2)) {
         return callWithErrorHandling(
           s2,
           instance,
@@ -3346,7 +3346,7 @@ function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EM
         warnInvalidSource(s2);
       }
     });
-  } else if (isFunction(source)) {
+  } else if (isFunction$1(source)) {
     if (cb) {
       getter = () => callWithErrorHandling(
         source,
@@ -3447,7 +3447,7 @@ function instanceWatch(source, value, options) {
   const publicThis = this.proxy;
   const getter = isString$1(source) ? source.includes(".") ? createPathGetter(publicThis, source) : () => publicThis[source] : source.bind(publicThis, publicThis);
   let cb;
-  if (isFunction(value)) {
+  if (isFunction$1(value)) {
     cb = value;
   } else {
     cb = value.handler;
@@ -3503,7 +3503,7 @@ function traverse(value, seen) {
   return value;
 }
 function defineComponent(options) {
-  return isFunction(options) ? { setup: options, name: options.name } : options;
+  return isFunction$1(options) ? { setup: options, name: options.name } : options;
 }
 const isKeepAlive = (vnode) => vnode.type.__isKeepAlive;
 function onActivated(hook, target) {
@@ -3896,7 +3896,7 @@ function applyOptions$1(instance) {
   if (methods) {
     for (const key in methods) {
       const methodHandler = methods[key];
-      if (isFunction(methodHandler)) {
+      if (isFunction$1(methodHandler)) {
         {
           Object.defineProperty(ctx, key, {
             value: methodHandler.bind(publicThis),
@@ -3914,11 +3914,11 @@ function applyOptions$1(instance) {
     }
   }
   if (dataOptions) {
-    if (!isFunction(dataOptions)) {
+    if (!isFunction$1(dataOptions)) {
       warn(`The data option must be a function. Plain object usage is no longer supported.`);
     }
     const data = dataOptions.call(publicThis, publicThis);
-    if (isPromise(data)) {
+    if (isPromise$1(data)) {
       warn(`data() returned a Promise - note data() cannot be async; If you intend to perform data fetching before component renders, use async setup() + <Suspense>.`);
     }
     if (!isObject(data)) {
@@ -3944,11 +3944,11 @@ function applyOptions$1(instance) {
   if (computedOptions) {
     for (const key in computedOptions) {
       const opt = computedOptions[key];
-      const get2 = isFunction(opt) ? opt.bind(publicThis, publicThis) : isFunction(opt.get) ? opt.get.bind(publicThis, publicThis) : NOOP;
+      const get2 = isFunction$1(opt) ? opt.bind(publicThis, publicThis) : isFunction$1(opt.get) ? opt.get.bind(publicThis, publicThis) : NOOP;
       if (get2 === NOOP) {
         warn(`Computed property "${key}" has no getter.`);
       }
-      const set2 = !isFunction(opt) && isFunction(opt.set) ? opt.set.bind(publicThis) : () => {
+      const set2 = !isFunction$1(opt) && isFunction$1(opt.set) ? opt.set.bind(publicThis) : () => {
         warn(`Write operation failed: computed property "${key}" is readonly.`);
       };
       const c = computed({
@@ -3973,7 +3973,7 @@ function applyOptions$1(instance) {
   }
   {
     if (provideOptions) {
-      const provides = isFunction(provideOptions) ? provideOptions.call(publicThis) : provideOptions;
+      const provides = isFunction$1(provideOptions) ? provideOptions.call(publicThis) : provideOptions;
       Reflect.ownKeys(provides).forEach((key) => {
         provide(key, provides[key]);
       });
@@ -4085,19 +4085,19 @@ function createWatcher(raw, ctx, publicThis, key) {
   const getter = key.includes(".") ? createPathGetter(publicThis, key) : () => publicThis[key];
   if (isString$1(raw)) {
     const handler = ctx[raw];
-    if (isFunction(handler)) {
+    if (isFunction$1(handler)) {
       watch(getter, handler);
     } else {
       warn(`Invalid watch handler specified by key "${raw}"`, handler);
     }
-  } else if (isFunction(raw)) {
+  } else if (isFunction$1(raw)) {
     watch(getter, raw.bind(publicThis));
   } else if (isObject(raw)) {
     if (isArray$1(raw)) {
       raw.forEach((r2) => createWatcher(r2, ctx, publicThis, key));
     } else {
-      const handler = isFunction(raw.handler) ? raw.handler.bind(publicThis) : ctx[raw.handler];
-      if (isFunction(handler)) {
+      const handler = isFunction$1(raw.handler) ? raw.handler.bind(publicThis) : ctx[raw.handler];
+      if (isFunction$1(handler)) {
         watch(getter, handler, raw);
       } else {
         warn(`Invalid watch handler specified by key "${raw.handler}"`, handler);
@@ -4188,7 +4188,7 @@ function mergeDataFn(to, from) {
     return from;
   }
   return function mergedDataFn() {
-    return extend(isFunction(to) ? to.call(this, this) : to, isFunction(from) ? from.call(this, this) : from);
+    return extend(isFunction$1(to) ? to.call(this, this) : to, isFunction$1(from) ? from.call(this, this) : from);
   };
 }
 function mergeInject(to, from) {
@@ -4383,7 +4383,7 @@ function resolvePropValue(options, props, key, value, instance, isAbsent) {
     const hasDefault = hasOwn(opt, "default");
     if (hasDefault && value === void 0) {
       const defaultValue = opt.default;
-      if (opt.type !== Function && isFunction(defaultValue)) {
+      if (opt.type !== Function && isFunction$1(defaultValue)) {
         const { propsDefaults } = instance;
         if (key in propsDefaults) {
           value = propsDefaults[key];
@@ -4422,7 +4422,7 @@ function normalizePropsOptions(comp, appContext, asMixin = false) {
   const normalized = {};
   const needCastKeys = [];
   let hasExtends = false;
-  if (!isFunction(comp)) {
+  if (!isFunction$1(comp)) {
     const extendProps = (raw2) => {
       hasExtends = true;
       const [props, keys] = normalizePropsOptions(raw2, appContext, true);
@@ -4464,7 +4464,7 @@ function normalizePropsOptions(comp, appContext, asMixin = false) {
       const normalizedKey = camelize(key);
       if (validatePropName(normalizedKey)) {
         const opt = raw[key];
-        const prop = normalized[normalizedKey] = isArray$1(opt) || isFunction(opt) ? { type: opt } : Object.assign({}, opt);
+        const prop = normalized[normalizedKey] = isArray$1(opt) || isFunction$1(opt) ? { type: opt } : Object.assign({}, opt);
         if (prop) {
           const booleanIndex = getTypeIndex(Boolean, prop.type);
           const stringIndex = getTypeIndex(String, prop.type);
@@ -4507,7 +4507,7 @@ function isSameType(a, b) {
 function getTypeIndex(type, expectedTypes) {
   if (isArray$1(expectedTypes)) {
     return expectedTypes.findIndex((t2) => isSameType(t2, type));
-  } else if (isFunction(expectedTypes)) {
+  } else if (isFunction$1(expectedTypes)) {
     return isSameType(expectedTypes, type) ? 0 : -1;
   }
   return -1;
@@ -4628,7 +4628,7 @@ function createAppContext() {
 let uid$1 = 0;
 function createAppAPI(render, hydrate) {
   return function createApp2(rootComponent, rootProps = null) {
-    if (!isFunction(rootComponent)) {
+    if (!isFunction$1(rootComponent)) {
       rootComponent = Object.assign({}, rootComponent);
     }
     if (rootProps != null && !isObject(rootProps)) {
@@ -4656,10 +4656,10 @@ function createAppAPI(render, hydrate) {
       use(plugin2, ...options) {
         if (installedPlugins.has(plugin2)) {
           warn(`Plugin has already been applied to target app.`);
-        } else if (plugin2 && isFunction(plugin2.install)) {
+        } else if (plugin2 && isFunction$1(plugin2.install)) {
           installedPlugins.add(plugin2);
           plugin2.install(app, ...options);
-        } else if (isFunction(plugin2)) {
+        } else if (isFunction$1(plugin2)) {
           installedPlugins.add(plugin2);
           plugin2(app, ...options);
         } else {
@@ -4922,7 +4922,7 @@ function setupStatefulComponent(instance, isSSR) {
     const setupResult = callWithErrorHandling(setup, instance, 0, [shallowReadonly(instance.props), setupContext]);
     resetTracking();
     unsetCurrentInstance();
-    if (isPromise(setupResult)) {
+    if (isPromise$1(setupResult)) {
       setupResult.then(unsetCurrentInstance, unsetCurrentInstance);
       {
         warn(`setup() returned a Promise, but the version of Vue you are using does not support it yet.`);
@@ -4935,7 +4935,7 @@ function setupStatefulComponent(instance, isSSR) {
   }
 }
 function handleSetupResult(instance, setupResult, isSSR) {
-  if (isFunction(setupResult)) {
+  if (isFunction$1(setupResult)) {
     {
       instance.render = setupResult;
     }
@@ -5055,7 +5055,7 @@ function getExposeProxy(instance) {
 const classifyRE = /(?:^|[-_])(\w)/g;
 const classify = (str) => str.replace(classifyRE, (c) => c.toUpperCase()).replace(/[-_]/g, "");
 function getComponentName(Component2, includeInferred = true) {
-  return isFunction(Component2) ? Component2.displayName || Component2.name : Component2.name || includeInferred && Component2.__name;
+  return isFunction$1(Component2) ? Component2.displayName || Component2.name : Component2.name || includeInferred && Component2.__name;
 }
 function formatComponentName(instance, Component2, isRoot = false) {
   let name = getComponentName(Component2);
@@ -5359,7 +5359,7 @@ function findComponentPublicInstance(mpComponents, id) {
   return null;
 }
 function setTemplateRef({ r: r2, f: f2 }, refValue, setupState) {
-  if (isFunction(r2)) {
+  if (isFunction$1(r2)) {
     r2(refValue, {});
   } else {
     const _isString = isString$1(r2);
@@ -5675,7 +5675,7 @@ function createVueApp(rootComponent, rootProps = null) {
   return app;
 }
 function injectLifecycleHook(name, hook, publicThis, instance) {
-  if (isFunction(hook)) {
+  if (isFunction$1(hook)) {
     injectHook(name, hook.bind(publicThis), instance);
   }
 }
@@ -5892,7 +5892,7 @@ function createInvoker(initialValue, instance) {
       setTimeout(invoke);
     } else {
       const res = invoke();
-      if (e2.type === "input" && (isArray$1(res) || isPromise(res))) {
+      if (e2.type === "input" && (isArray$1(res) || isPromise$1(res))) {
         return;
       }
       return res;
@@ -6024,6 +6024,10 @@ function stringify(styles) {
   }
   return ret;
 }
+function setRef(ref2, id, opts = {}) {
+  const { $templateRefs } = getCurrentInstance();
+  $templateRefs.push({ i: id, r: ref2, k: opts.k, f: opts.f });
+}
 const o = (value, key) => vOn(value, key);
 const f = (source, renderItem) => vFor(source, renderItem);
 const r = (name, props, key) => renderSlot(name, props, key);
@@ -6032,6 +6036,7 @@ const e = (target, ...sources) => extend(target, ...sources);
 const n = (value) => normalizeClass(value);
 const t = (val) => toDisplayString(val);
 const p = (props) => renderProps(props);
+const sr = (ref2, id, opts) => setRef(ref2, id, opts);
 function createApp$1(rootComponent, rootProps = null) {
   rootComponent && (rootComponent.mpType = "app");
   return createVueApp(rootComponent, rootProps).use(plugin);
@@ -6180,7 +6185,7 @@ function initRuntimeHooks(mpOptions, runtimeHooks) {
 }
 const findMixinRuntimeHooks = /* @__PURE__ */ once(() => {
   const runtimeHooks = [];
-  const app = isFunction(getApp) && getApp({ allowDefault: true });
+  const app = isFunction$1(getApp) && getApp({ allowDefault: true });
   if (app && app.$vm && app.$vm.$) {
     const mixins = app.$vm.$.appContext.mixins;
     if (isArray$1(mixins)) {
@@ -6254,7 +6259,7 @@ function initCreateApp(parseAppOptions) {
 function initCreateSubpackageApp(parseAppOptions) {
   return function createApp2(vm) {
     const appOptions = parseApp(vm, parseAppOptions);
-    const app = isFunction(getApp) && getApp({
+    const app = isFunction$1(getApp) && getApp({
       allowDefault: true
     });
     if (!app)
@@ -6277,16 +6282,16 @@ function initCreateSubpackageApp(parseAppOptions) {
   };
 }
 function initAppLifecycle(appOptions, vm) {
-  if (isFunction(appOptions.onLaunch)) {
+  if (isFunction$1(appOptions.onLaunch)) {
     const args = wx.getLaunchOptionsSync && wx.getLaunchOptionsSync();
     appOptions.onLaunch(args);
   }
-  if (isFunction(appOptions.onShow) && wx.onAppShow) {
+  if (isFunction$1(appOptions.onShow) && wx.onAppShow) {
     wx.onAppShow((args) => {
       vm.$callHook("onShow", args);
     });
   }
-  if (isFunction(appOptions.onHide) && wx.onAppHide) {
+  if (isFunction$1(appOptions.onHide) && wx.onAppHide) {
     wx.onAppHide((args) => {
       vm.$callHook("onHide", args);
     });
@@ -6494,7 +6499,7 @@ function initPageProps({ properties }, rawProps) {
       const opts = rawProps[key];
       if (isPlainObject(opts)) {
         let value = opts.default;
-        if (isFunction(value)) {
+        if (isFunction$1(value)) {
           value = value();
         }
         const type = opts.type;
@@ -6898,6 +6903,10 @@ const makeRequiredProp = (type) => ({
   type,
   required: true
 });
+const makeArrayProp = () => ({
+  type: Array,
+  default: () => []
+});
 const makeBooleanProp = (defaultVal) => ({
   type: Boolean,
   default: defaultVal
@@ -7042,14 +7051,26 @@ function kebabCase(word) {
   }).toLowerCase();
   return newWord;
 }
+function camelCase(word) {
+  return word.replace(/-(\w)/g, (_, c) => c.toUpperCase());
+}
 function isArray(value) {
   if (typeof Array.isArray === "function") {
     return Array.isArray(value);
   }
   return Object.prototype.toString.call(value) === "[object Array]";
 }
+function isFunction(value) {
+  return getType(value) === "function";
+}
 function isString(value) {
   return getType(value) === "string";
+}
+function isPromise(value) {
+  if (isObj(value)) {
+    return isFunction(value.then) && isFunction(value.catch);
+  }
+  return false;
 }
 function objToStyle(styles) {
   if (isArray(styles)) {
@@ -7071,25 +7092,64 @@ function objToStyle(styles) {
   }
   return "";
 }
-const iconProps = {
-  ...baseProps,
-  /**
-   * 使用的图标名字，可以使用链接图片
-   */
-  name: makeRequiredProp(String),
-  /**
-   * 图标的颜色
-   */
-  color: String,
-  /**
-   * 图标的字体大小
-   */
-  size: String,
-  /**
-   * 类名前缀，用于使用自定义图标
-   */
-  classPrefix: makeStringProp("wd-icon")
+const requestAnimationFrame = (cb = () => {
+}) => {
+  return new Promise((resolve) => {
+    const timer = setInterval(() => {
+      clearInterval(timer);
+      resolve(true);
+      cb();
+    }, 1e3 / 30);
+  });
 };
+function deepClone(obj, cache = /* @__PURE__ */ new Map()) {
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+  if (isDate(obj)) {
+    return new Date(obj.getTime());
+  }
+  if (obj instanceof RegExp) {
+    return new RegExp(obj.source, obj.flags);
+  }
+  if (obj instanceof Error) {
+    const errorCopy = new Error(obj.message);
+    errorCopy.stack = obj.stack;
+    return errorCopy;
+  }
+  if (cache.has(obj)) {
+    return cache.get(obj);
+  }
+  const copy = Array.isArray(obj) ? [] : {};
+  cache.set(obj, copy);
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      copy[key] = deepClone(obj[key], cache);
+    }
+  }
+  return copy;
+}
+function deepAssign(target, source) {
+  Object.keys(source).forEach((key) => {
+    const targetValue = target[key];
+    const newObjValue = source[key];
+    if (isObj(targetValue) && isObj(newObjValue)) {
+      deepAssign(targetValue, newObjValue);
+    } else {
+      target[key] = newObjValue;
+    }
+  });
+  return target;
+}
+const getPropByPath = (obj, path) => {
+  const keys = path.split(".");
+  try {
+    return keys.reduce((acc, key) => acc !== void 0 && acc !== null ? acc[key] : void 0, obj);
+  } catch (error) {
+    return void 0;
+  }
+};
+const isDate = (val) => Object.prototype.toString.call(val) === "[object Date]" && !Number.isNaN(val.getTime());
 function isVNode(value) {
   return value ? value.__v_isVNode === true : false;
 }
@@ -7167,6 +7227,372 @@ function useChildren(key) {
     linkChildren
   };
 }
+const FORM_KEY = Symbol("wd-form");
+const formProps = {
+  ...baseProps,
+  /**
+   * 表单数据对象
+   */
+  model: makeRequiredProp(Object),
+  /**
+   * 表单验证规则
+   */
+  rules: {
+    type: Object,
+    default: () => ({})
+  },
+  /**
+   * 是否在输入时重置表单校验信息
+   */
+  resetOnChange: makeBooleanProp(true)
+};
+const CELL_GROUP_KEY = Symbol("wd-cell-group");
+const cellGroupProps = {
+  ...baseProps,
+  /**
+   * 分组标题
+   */
+  title: String,
+  /**
+   * 分组右侧内容
+   */
+  value: String,
+  /**
+   * 分组启用插槽
+   */
+  useSlot: makeBooleanProp(false),
+  /**
+   * 是否展示边框线
+   */
+  border: makeBooleanProp(false)
+};
+function useParent(key) {
+  const parent = inject(key, null);
+  if (parent) {
+    const instance = getCurrentInstance();
+    const { link, unlink, internalChildren } = parent;
+    link(instance);
+    onUnmounted(() => unlink(instance));
+    const index2 = computed(() => internalChildren.indexOf(instance));
+    return {
+      parent,
+      index: index2
+    };
+  }
+  return {
+    parent: null,
+    index: ref(-1)
+  };
+}
+function useCell() {
+  const { parent: cellGroup, index: index2 } = useParent(CELL_GROUP_KEY);
+  const border = computed(() => {
+    return cellGroup && cellGroup.props.border && index2.value;
+  });
+  return { border };
+}
+const zhCN = {
+  calendar: {
+    placeholder: "请选择",
+    title: "选择日期",
+    day: "日",
+    week: "周",
+    month: "月",
+    confirm: "确定",
+    startTime: "开始时间",
+    endTime: "结束时间",
+    to: "至",
+    timeFormat: "YY年MM月DD日 HH:mm:ss",
+    dateFormat: "YYYY年MM月DD日",
+    weekFormat: (year, week) => `${year} 第 ${week} 周`,
+    startWeek: "开始周",
+    endWeek: "结束周",
+    startMonth: "开始月",
+    endMonth: "结束月",
+    monthFormat: "YYYY年MM月"
+  },
+  calendarView: {
+    startTime: "开始",
+    endTime: "结束",
+    weeks: {
+      sun: "日",
+      mon: "一",
+      tue: "二",
+      wed: "三",
+      thu: "四",
+      fri: "五",
+      sat: "六"
+    },
+    rangePrompt: (maxRange) => `选择天数不能超过${maxRange}天`,
+    rangePromptWeek: (maxRange) => `选择周数不能超过${maxRange}周`,
+    rangePromptMonth: (maxRange) => `选择月份不能超过${maxRange}个月`,
+    monthTitle: "YYYY年M月",
+    yearTitle: "YYYY年",
+    month: "M月",
+    hour: (value) => `${value}时`,
+    minute: (value) => `${value}分`,
+    second: (value) => `${value}秒`
+  },
+  collapse: {
+    expand: "展开",
+    retract: "收起"
+  },
+  colPicker: {
+    title: "请选择",
+    placeholder: "请选择",
+    select: "请选择"
+  },
+  datetimePicker: {
+    start: "开始时间",
+    end: "结束时间",
+    to: "至",
+    placeholder: "请选择",
+    confirm: "完成",
+    cancel: "取消"
+  },
+  loadmore: {
+    loading: "正在努力加载中...",
+    finished: "已加载完毕",
+    error: "加载失败",
+    retry: "点击重试"
+  },
+  messageBox: {
+    inputPlaceholder: "请输入",
+    confirm: "确定",
+    cancel: "取消",
+    inputNoValidate: "输入的数据不合法"
+  },
+  numberKeyboard: {
+    confirm: "完成"
+  },
+  pagination: {
+    prev: "上一页",
+    next: "下一页",
+    page: (value) => `当前页：${value}`,
+    total: (total) => `当前数据：${total}条`,
+    size: (size2) => `分页大小：${size2}`
+  },
+  picker: {
+    cancel: "取消",
+    done: "完成",
+    placeholder: "请选择"
+  },
+  imgCropper: {
+    confirm: "完成",
+    cancel: "取消"
+  },
+  search: {
+    search: "搜索",
+    cancel: "取消"
+  },
+  steps: {
+    wait: "未开始",
+    finished: "已完成",
+    process: "进行中",
+    failed: "失败"
+  },
+  tabs: {
+    all: "全部"
+  },
+  upload: {
+    error: "上传失败"
+  },
+  input: {
+    placeholder: "请输入..."
+  },
+  selectPicker: {
+    title: "请选择",
+    placeholder: "请选择",
+    select: "请选择",
+    confirm: "确认",
+    filterPlaceholder: "搜索"
+  },
+  tag: {
+    placeholder: "请输入",
+    add: "新增标签"
+  },
+  textarea: {
+    placeholder: "请输入..."
+  }
+};
+const lang = ref("zh-CN");
+const messages = reactive({
+  "zh-CN": zhCN
+});
+const Locale = {
+  messages() {
+    return messages[lang.value];
+  },
+  use(newLang, newMessage) {
+    lang.value = newLang;
+    if (newMessage) {
+      this.add({ [newLang]: newMessage });
+    }
+  },
+  add(newMessages = {}) {
+    deepAssign(messages, newMessages);
+  }
+};
+const useTranslate = (name) => {
+  const prefix = name ? camelCase(name) + "." : "";
+  const translate = (key, ...args) => {
+    const currentMessages = Locale.messages();
+    const message = getPropByPath(currentMessages, prefix + key);
+    return isFunction(message) ? message(...args) : message;
+  };
+  return { translate };
+};
+const inputProps = {
+  ...baseProps,
+  customInputClass: makeStringProp(""),
+  customLabelClass: makeStringProp(""),
+  // 原生属性
+  /**
+   * 占位文本
+   */
+  placeholder: String,
+  /**
+   * 原生属性，指定 placeholder 的样式，目前仅支持color,font-size和font-weight
+   */
+  placeholderStyle: String,
+  /**
+   * 原生属性，指定 placeholder 的样式类
+   */
+  placeholderClass: makeStringProp(""),
+  /**
+   * 原生属性，指定光标与键盘的距离。取 input 距离底部的距离和cursor-spacing指定的距离的最小值作为光标与键盘的距离
+   */
+  cursorSpacing: makeNumberProp(0),
+  /**
+   * 原生属性，指定focus时的光标位置
+   */
+  cursor: makeNumberProp(-1),
+  /**
+   * 原生属性，光标起始位置，自动聚集时有效，需与selection-end搭配使用
+   */
+  selectionStart: makeNumberProp(-1),
+  /**
+   * 原生属性，光标结束位置，自动聚集时有效，需与selection-start搭配使用
+   */
+  selectionEnd: makeNumberProp(-1),
+  /**
+   * 原生属性，键盘弹起时，是否自动上推页面
+   */
+  adjustPosition: makeBooleanProp(true),
+  /**
+   * focus时，点击页面的时候不收起键盘
+   */
+  holdKeyboard: makeBooleanProp(false),
+  /**
+   * 设置键盘右下角按钮的文字，仅在type='text'时生效，可选值：done / go / next / search / send
+   */
+  confirmType: makeStringProp("done"),
+  /**
+   * 点击键盘右下角按钮时是否保持键盘不收起
+   */
+  confirmHold: makeBooleanProp(false),
+  /**
+   * 原生属性，获取焦点
+   */
+  focus: makeBooleanProp(false),
+  /**
+   * 类型，可选值：text / number / digit / idcard
+   */
+  type: makeStringProp("text"),
+  /**
+   * 原生属性，最大长度
+   */
+  maxlength: makeNumberProp(-1),
+  /**
+   * 原生属性，禁用
+   */
+  disabled: makeBooleanProp(false),
+  /**
+   * 微信小程序原生属性，强制 input 处于同层状态，默认 focus 时 input 会切到非同层状态 (仅在 iOS 下生效)
+   */
+  alwaysEmbed: makeBooleanProp(false),
+  // 原生属性结束
+  /**
+   * 输入框的值靠右展示
+   */
+  alignRight: makeBooleanProp(false),
+  /**
+   * 绑定值
+   */
+  modelValue: makeNumericProp(""),
+  /**
+   * 显示为密码框
+   */
+  showPassword: makeBooleanProp(false),
+  /**
+   * 显示清空按钮
+   */
+  clearable: makeBooleanProp(false),
+  /**
+   * 只读
+   */
+  readonly: makeBooleanProp(false),
+  /**
+   * 使用 后置图标 插槽
+   */
+  useSuffixSlot: makeBooleanProp(false),
+  /**
+   * 使用 前置图标 插槽
+   */
+  usePrefixSlot: makeBooleanProp(false),
+  /**
+   * 前置图标，icon组件中的图标类名
+   */
+  prefixIcon: String,
+  /**
+   * 后置图标，icon组件中的图标类名
+   */
+  suffixIcon: String,
+  /**
+   * 显示字数限制，需要同时设置 maxlength
+   */
+  showWordLimit: makeBooleanProp(false),
+  /**
+   * 设置左侧标题
+   */
+  label: String,
+  /**
+   * 设置左侧标题宽度
+   */
+  labelWidth: makeStringProp("33%"),
+  /**
+   * 使用 label 插槽
+   */
+  useLabelSlot: makeBooleanProp(false),
+  /**
+   * 设置输入框大小，可选值：large
+   */
+  size: String,
+  /**
+   * 设置输入框错误状态，错误状态时为红色
+   */
+  error: makeBooleanProp(false),
+  /**
+   * 当有label属性时，设置标题和输入框垂直居中，默认为顶部居中
+   */
+  center: makeBooleanProp(false),
+  /**
+   * 非 cell 类型下是否隐藏下划线
+   */
+  noBorder: makeBooleanProp(false),
+  /**
+   * 是否必填
+   */
+  required: makeBooleanProp(false),
+  /**
+   * 表单域 model 字段名，在使用表单校验功能的情况下，该属性是必填的
+   */
+  prop: String,
+  /**
+   * 表单验证规则，结合wd-form组件使用
+   */
+  rules: makeArrayProp()
+};
 const TABBAR_KEY = Symbol("wd-tabbar");
 const tabbarProps = {
   ...baseProps,
@@ -7207,24 +7633,6 @@ const tabbarProps = {
    */
   zIndex: makeNumberProp(99)
 };
-function useParent(key) {
-  const parent = inject(key, null);
-  if (parent) {
-    const instance = getCurrentInstance();
-    const { link, unlink, internalChildren } = parent;
-    link(instance);
-    onUnmounted(() => unlink(instance));
-    const index2 = computed(() => internalChildren.indexOf(instance));
-    return {
-      parent,
-      index: index2
-    };
-  }
-  return {
-    parent: null,
-    index: ref(-1)
-  };
-}
 const tabbarItemProps = {
   ...baseProps,
   /**
@@ -7258,6 +7666,25 @@ const tabbarItemProps = {
    * 徽标属性，透传给 Badge 组件
    */
   badgeProps: Object
+};
+const iconProps = {
+  ...baseProps,
+  /**
+   * 使用的图标名字，可以使用链接图片
+   */
+  name: makeRequiredProp(String),
+  /**
+   * 图标的颜色
+   */
+  color: String,
+  /**
+   * 图标的字体大小
+   */
+  size: String,
+  /**
+   * 类名前缀，用于使用自定义图标
+   */
+  classPrefix: makeStringProp("wd-icon")
 };
 const swiperProps = {
   ...baseProps,
@@ -7452,26 +7879,35 @@ const swiperNavprops = {
    */
   type: makeStringProp("dots")
 };
+exports.CELL_GROUP_KEY = CELL_GROUP_KEY;
+exports.FORM_KEY = FORM_KEY;
 exports.TABBAR_KEY = TABBAR_KEY;
 exports._export_sfc = _export_sfc;
 exports.addUnit = addUnit;
 exports.badgeProps = badgeProps;
 exports.buttonProps = buttonProps;
+exports.cellGroupProps = cellGroupProps;
 exports.computed = computed;
 exports.createSSRApp = createSSRApp;
+exports.deepClone = deepClone;
 exports.defineComponent = defineComponent;
 exports.e = e;
 exports.encode = encode;
 exports.f = f;
+exports.formProps = formProps;
 exports.getCurrentInstance = getCurrentInstance;
+exports.getPropByPath = getPropByPath;
 exports.getRect = getRect;
 exports.iconProps = iconProps;
+exports.inputProps = inputProps;
 exports.isDef = isDef;
 exports.isObj = isObj;
+exports.isPromise = isPromise;
 exports.n = n;
 exports.nextTick$1 = nextTick$1;
 exports.o = o;
 exports.objToStyle = objToStyle;
+exports.onBeforeMount = onBeforeMount;
 exports.onHide = onHide;
 exports.onLaunch = onLaunch;
 exports.onLoad = onLoad;
@@ -7479,14 +7915,19 @@ exports.onMounted = onMounted;
 exports.onShow = onShow;
 exports.p = p;
 exports.r = r;
+exports.reactive = reactive;
 exports.ref = ref;
+exports.requestAnimationFrame = requestAnimationFrame;
 exports.s = s;
+exports.sr = sr;
 exports.swiperNavprops = swiperNavprops;
 exports.swiperProps = swiperProps;
 exports.t = t;
 exports.tabbarItemProps = tabbarItemProps;
 exports.tabbarProps = tabbarProps;
 exports.unref = unref;
+exports.useCell = useCell;
 exports.useChildren = useChildren;
 exports.useParent = useParent;
+exports.useTranslate = useTranslate;
 exports.watch = watch;

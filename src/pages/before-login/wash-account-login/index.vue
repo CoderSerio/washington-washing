@@ -1,0 +1,128 @@
+<template>
+  <view class="page-wrapper">
+    <view class="title"> 注册 </view>
+    <view class="form">
+      <wd-form ref="form" :model="model">
+        <wd-cell-group border>
+          <wd-input
+            label="用户名"
+            label-width="100px"
+            prop="value1"
+            clearable
+            v-model="model.value1"
+            placeholder="请输入用户名"
+            :rules="[{ required: true, message: '请填写用户名' }]"
+          />
+          <wd-input
+            label="密码"
+            label-width="100px"
+            prop="value2"
+            show-password
+            clearable
+            v-model="model.value2"
+            placeholder="请输入密码"
+            :rules="[{ required: true, message: '请填写密码' }]"
+          />
+        </wd-cell-group>
+
+        <view class="footer">
+          <wd-button
+            custom-class="submit-button"
+            type="primary"
+            block
+            @click="handleSubmit"
+          >
+            提交
+          </wd-button>
+          <wd-button
+            custom-class="back-button"
+            type="info"
+            block
+            @click="props.changeStep('init')"
+          >
+            返回
+          </wd-button>
+        </view>
+      </wd-form>
+    </view>
+  </view>
+</template>
+
+<script lang="ts" setup>
+import { reactive, ref } from "vue";
+
+const props = defineProps<{
+  changeStep: (step: string) => void;
+}>();
+
+const model = reactive<{
+  value1: string;
+  value2: string;
+}>({
+  value1: "",
+  value2: "",
+});
+
+const form = ref();
+
+function handleSubmit() {
+  form.value
+    .validate()
+    .then(({ valid, errors }: any) => {
+      if (valid) {
+        console.log("ok");
+      }
+    })
+    .catch((error: Error) => {
+      console.log(error, "error");
+    });
+}
+</script>
+
+<script lang="ts">
+export default {
+  options: {
+    styleIsolation: "shared",
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.page-wrapper {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .title {
+    font-size: 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+  }
+  .form {
+    flex: 3;
+  }
+}
+
+.footer {
+  margin-top: 40px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  :deep(.submit-button) {
+    width: 80%;
+    height: 48px !important;
+  }
+
+  :deep(.back-button) {
+    width: 80%;
+    height: 48px !important;
+  }
+}
+</style>
