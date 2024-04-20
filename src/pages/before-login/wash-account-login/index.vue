@@ -1,6 +1,6 @@
 <template>
   <view class="page-wrapper">
-    <view class="title"> 注册 </view>
+    <view class="title"> 登录 </view>
     <view class="form">
       <wd-form ref="form" :model="model">
         <wd-cell-group border>
@@ -32,7 +32,7 @@
             block
             @click="handleSubmit"
           >
-            提交
+            登录
           </wd-button>
           <wd-button
             custom-class="back-button"

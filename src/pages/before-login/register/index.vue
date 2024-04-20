@@ -23,6 +23,14 @@
             placeholder="请输入密码"
             :rules="[{ required: true, message: '请填写密码' }]"
           />
+
+          <view class="radio-group">
+            <view class="radio-label">账号类型</view>
+            <wd-radio-group shape="dot" v-model="model.value3" inline>
+              <wd-radio :value="1">用户</wd-radio>
+              <wd-radio :value="2">商家</wd-radio>
+            </wd-radio-group>
+          </view>
         </wd-cell-group>
 
         <view class="footer">
@@ -32,7 +40,7 @@
             block
             @click="handleSubmit"
           >
-            提交
+            注册
           </wd-button>
           <wd-button
             custom-class="back-button"
@@ -58,9 +66,11 @@ const props = defineProps<{
 const model = reactive<{
   value1: string;
   value2: string;
+  value3: number;
 }>({
   value1: "",
   value2: "",
+  value3: 1,
 });
 
 const form = ref();
@@ -107,6 +117,18 @@ export default {
   }
 }
 
+.radio-group {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  .radio-label {
+    display: inline-block;
+    font-size: var(--wot-input-fs, var(--wot-cell-title-fs, 14px));
+    line-height: var(--wot-cell-line-height, 24px);
+  }
+}
 .footer {
   margin-top: 40px;
   width: 100%;
