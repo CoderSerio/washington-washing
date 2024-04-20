@@ -4635,18 +4635,18 @@ function createAppAPI(render, hydrate) {
       warn(`root props passed to app.mount() must be an object.`);
       rootProps = null;
     }
-    const context = createAppContext();
+    const context2 = createAppContext();
     const installedPlugins = /* @__PURE__ */ new Set();
-    const app = context.app = {
+    const app = context2.app = {
       _uid: uid$1++,
       _component: rootComponent,
       _props: rootProps,
       _container: null,
-      _context: context,
+      _context: context2,
       _instance: null,
       version,
       get config() {
-        return context.config;
+        return context2.config;
       },
       set config(v) {
         {
@@ -4669,8 +4669,8 @@ function createAppAPI(render, hydrate) {
       },
       mixin(mixin) {
         {
-          if (!context.mixins.includes(mixin)) {
-            context.mixins.push(mixin);
+          if (!context2.mixins.includes(mixin)) {
+            context2.mixins.push(mixin);
           } else {
             warn("Mixin has already been applied to target app" + (mixin.name ? `: ${mixin.name}` : ""));
           }
@@ -4679,15 +4679,15 @@ function createAppAPI(render, hydrate) {
       },
       component(name, component) {
         {
-          validateComponentName(name, context.config);
+          validateComponentName(name, context2.config);
         }
         if (!component) {
-          return context.components[name];
+          return context2.components[name];
         }
-        if (context.components[name]) {
+        if (context2.components[name]) {
           warn(`Component "${name}" has already been registered in target app.`);
         }
-        context.components[name] = component;
+        context2.components[name] = component;
         return app;
       },
       directive(name, directive) {
@@ -4695,12 +4695,12 @@ function createAppAPI(render, hydrate) {
           validateDirectiveName(name);
         }
         if (!directive) {
-          return context.directives[name];
+          return context2.directives[name];
         }
-        if (context.directives[name]) {
+        if (context2.directives[name]) {
           warn(`Directive "${name}" has already been registered in target app.`);
         }
-        context.directives[name] = directive;
+        context2.directives[name] = directive;
         return app;
       },
       // fixed by xxxxxx
@@ -4710,10 +4710,10 @@ function createAppAPI(render, hydrate) {
       unmount() {
       },
       provide(key, value) {
-        if (key in context.provides) {
+        if (key in context2.provides) {
           warn(`App already provides property with key "${String(key)}". It will be overwritten with the new value.`);
         }
-        context.provides[key] = value;
+        context2.provides[key] = value;
         return app;
       }
     };
@@ -7026,6 +7026,35 @@ function getType(target) {
   return type;
 }
 const isDef = (value) => value !== void 0 && value !== null;
+function rgbToHex(r2, g, b) {
+  const hex = (r2 << 16 | g << 8 | b).toString(16);
+  const paddedHex = "#" + "0".repeat(Math.max(0, 6 - hex.length)) + hex;
+  return paddedHex;
+}
+function hexToRgb(hex) {
+  const rgb = [];
+  for (let i = 1; i < 7; i += 2) {
+    rgb.push(parseInt("0x" + hex.slice(i, i + 2), 16));
+  }
+  return rgb;
+}
+const gradient = (startColor, endColor, step = 2) => {
+  const sColor = hexToRgb(startColor);
+  const eColor = hexToRgb(endColor);
+  const rStep = (eColor[0] - sColor[0]) / step;
+  const gStep = (eColor[1] - sColor[1]) / step;
+  const bStep = (eColor[2] - sColor[2]) / step;
+  const gradientColorArr = [];
+  for (let i = 0; i < step; i++) {
+    gradientColorArr.push(
+      rgbToHex(parseInt(String(rStep * i + sColor[0])), parseInt(String(gStep * i + sColor[1])), parseInt(String(bStep * i + sColor[2])))
+    );
+  }
+  return gradientColorArr;
+};
+const context = {
+  id: 1e3
+};
 function getRect(selector, all, scope) {
   return new Promise((resolve, reject) => {
     let query = null;
@@ -7128,6 +7157,18 @@ function deepClone(obj, cache = /* @__PURE__ */ new Map()) {
     }
   }
   return copy;
+}
+function deepMerge(target, source) {
+  target = deepClone(target);
+  if (typeof target !== "object" || typeof source !== "object") {
+    throw new Error("Both target and source must be objects.");
+  }
+  for (const prop in source) {
+    if (!source.hasOwnProperty(prop))
+      continue;
+    target[prop] = source[prop];
+  }
+  return target;
 }
 function deepAssign(target, source) {
   Object.keys(source).forEach((key) => {
@@ -7682,6 +7723,68 @@ const inputProps = {
    */
   rules: makeArrayProp()
 };
+const toastDefaultOptionKey = "__TOAST_OPTION__";
+const defaultOptions = {
+  msg: "",
+  duration: 2e3,
+  loadingType: "outline",
+  loadingColor: "#4D80F0",
+  iconColor: "#4D80F0",
+  iconSize: 42,
+  loadingSize: 42,
+  customIcon: false,
+  position: "middle",
+  show: false,
+  zIndex: 100
+};
+function useToast(selector = "") {
+  let timer = null;
+  const toastOption = ref(defaultOptions);
+  const toastOptionKey = selector ? toastDefaultOptionKey + selector : toastDefaultOptionKey;
+  provide(toastOptionKey, toastOption);
+  const createMethod = (toastOptions) => {
+    return (options) => {
+      return show(deepMerge(toastOptions, typeof options === "string" ? { msg: options } : options));
+    };
+  };
+  const show = (option) => {
+    const options = deepMerge(defaultOptions, typeof option === "string" ? { msg: option } : option);
+    toastOption.value = deepMerge(options, {
+      show: true
+    });
+    timer && clearTimeout(timer);
+    if (toastOption.value.duration && toastOption.value.duration > 0) {
+      timer = setTimeout(() => {
+        timer && clearTimeout(timer);
+        close();
+      }, options.duration);
+    }
+  };
+  const loading = createMethod({
+    iconName: "loading",
+    duration: 0,
+    cover: true
+  });
+  const success = createMethod({
+    iconName: "success",
+    duration: 1500
+  });
+  const error = createMethod({ iconName: "error" });
+  const warning = createMethod({ iconName: "warning" });
+  const info = createMethod({ iconName: "info" });
+  const close = () => {
+    toastOption.value = { show: false };
+  };
+  return {
+    show,
+    loading,
+    success,
+    error,
+    warning,
+    info,
+    close
+  };
+}
 const TABBAR_KEY = Symbol("wd-tabbar");
 const tabbarProps = {
   ...baseProps,
@@ -7900,6 +8003,130 @@ const swiperProps = {
    */
   customNextImageClass: makeStringProp("")
 };
+const actionSheetProps = {
+  ...baseProps,
+  /**
+   * header 头部样式
+   * @default ''
+   * @type {string}
+   */
+  customHeaderClass: makeStringProp(""),
+  /**
+   * 设置菜单显示隐藏
+   * @default false
+   * @type {boolean}
+   */
+  modelValue: { ...makeBooleanProp(false), ...makeRequiredProp(Boolean) },
+  /**
+   * 菜单选项
+   * @default []
+   * @type {Action[]}
+   */
+  actions: makeArrayProp(),
+  /**
+   * 自定义面板项,可以为字符串数组，也可以为对象数组，如果为二维数组，则为多行展示
+   * @default []
+   * @type {Array<Panel | Panel[]>}
+   */
+  panels: makeArrayProp(),
+  /**
+   * 标题
+   * @type {string}
+   */
+  title: String,
+  /**
+   * 取消按钮文案
+   * @type {string}
+   */
+  cancelText: String,
+  /**
+   * 点击选项后是否关闭菜单
+   * @default true
+   * @type {boolean}
+   */
+  closeOnClickAction: makeBooleanProp(true),
+  /**
+   * 点击遮罩是否关闭
+   * @default true
+   * @type {boolean}
+   */
+  closeOnClickModal: makeBooleanProp(true),
+  /**
+   * 弹框动画持续时间
+   * @default 200
+   * @type {number}
+   */
+  duration: makeNumberProp(200),
+  /**
+   * 菜单层级
+   * @default 10
+   * @type {number}
+   */
+  zIndex: makeNumberProp(10),
+  /**
+   * 弹层内容懒渲染，触发展示时才渲染内容
+   * @default true
+   * @type {boolean}
+   */
+  lazyRender: makeBooleanProp(true),
+  /**
+   * 弹出面板是否设置底部安全距离（iphone X 类型的机型）
+   * @default true
+   * @type {boolean}
+   */
+  safeAreaInsetBottom: makeBooleanProp(true)
+};
+const CHECKBOX_GROUP_KEY = Symbol("wd-checkbox-group");
+const checkboxProps = {
+  ...baseProps,
+  customLabelClass: makeStringProp(""),
+  customShapeClass: makeStringProp(""),
+  /**
+   * 单选框选中时的值
+   */
+  modelValue: {
+    type: [String, Number, Boolean],
+    required: true,
+    default: false
+  },
+  /**
+   * 单选框形状，可选值：circle / square / button
+   */
+  shape: makeStringProp("circle"),
+  /**
+   * 选中的颜色
+   */
+  checkedColor: String,
+  /**
+   * 禁用
+   */
+  disabled: {
+    type: [Boolean, null],
+    default: null
+  },
+  /**
+   * 选中值，在 checkbox-group 中使用无效，需同 false-value 一块使用
+   */
+  trueValue: {
+    type: [String, Number, Boolean],
+    default: true
+  },
+  /**
+   * 非选中时的值，在 checkbox-group 中使用无效，需同 true-value 一块使用
+   */
+  falseValue: {
+    type: [String, Number, Boolean],
+    default: false
+  },
+  /**
+   * 设置大小，可选值：large
+   */
+  size: String,
+  /**
+   * 文字位置最大宽度
+   */
+  maxWidth: String
+};
 const GRID_KEY = Symbol("wd-grid");
 const gridProps = {
   ...baseProps,
@@ -8095,17 +8322,174 @@ const swiperNavprops = {
    */
   type: makeStringProp("dots")
 };
+const popupProps = {
+  ...baseProps,
+  transition: String,
+  /**
+   * 关闭按钮
+   */
+  closable: makeBooleanProp(false),
+  /**
+   * 弹出框的位置
+   */
+  position: makeStringProp("center"),
+  /**
+   * 点击遮罩是否关闭
+   */
+  closeOnClickModal: makeBooleanProp(true),
+  /**
+   * 动画持续时间
+   */
+  duration: {
+    type: [Number, Boolean],
+    default: 300
+  },
+  /**
+   * 是否显示遮罩
+   */
+  modal: makeBooleanProp(true),
+  /**
+   * 设置层级
+   */
+  zIndex: makeNumberProp(10),
+  /**
+   * 是否当关闭时将弹出层隐藏（display: none)
+   */
+  hideWhenClose: makeBooleanProp(true),
+  /**
+   * 遮罩样式
+   */
+  modalStyle: makeStringProp(""),
+  /**
+   * 弹出面板是否设置底部安全距离（iphone X 类型的机型）
+   */
+  safeAreaInsetBottom: makeBooleanProp(false),
+  /**
+   * 弹出层是否显示
+   */
+  modelValue: makeBooleanProp(false),
+  /**
+   * 弹层内容懒渲染，触发展示时才渲染内容
+   */
+  lazyRender: makeBooleanProp(true),
+  /**
+   * 是否锁定滚动
+   */
+  lockScroll: makeBooleanProp(true)
+};
+const loadingProps = {
+  ...baseProps,
+  /**
+   * 加载指示器类型，可选值：'outline' | 'ring' | 'circle-outline' | 'circle-ring'
+   */
+  type: makeStringProp("ring"),
+  /**
+   * 设置加载指示器颜色
+   */
+  color: makeStringProp("#4D80F0"),
+  /**
+   * 设置加载指示器大小
+   */
+  size: makeNumericProp("32px")
+};
+const overlayProps = {
+  ...baseProps,
+  /**
+   * 是否展示遮罩层
+   */
+  show: makeBooleanProp(false),
+  /**
+   * 动画时长，单位毫秒
+   */
+  duration: {
+    type: [Object, Number, Boolean],
+    default: 300
+  },
+  /**
+   * 是否锁定滚动
+   */
+  lockScroll: makeBooleanProp(true),
+  /**
+   * 层级
+   */
+  zIndex: makeNumberProp(10)
+};
+const transitionProps = {
+  ...baseProps,
+  /**
+   * 是否展示组件
+   * 类型：boolean
+   * 默认值：false
+   */
+  show: makeBooleanProp(false),
+  /**
+   * 动画执行时间
+   * 类型：number | boolean | Record<string, number>
+   * 默认值：300 (毫秒)
+   */
+  duration: {
+    type: [Object, Number, Boolean],
+    default: 300
+  },
+  /**
+   * 动画类型
+   * 类型：string
+   * 可选值：fade / fade-up / fade-down / fade-left / fade-right / slide-up / slide-down / slide-left / slide-right / zoom-in
+   * 默认值：'fade'
+   */
+  name: makeStringProp("fade"),
+  /**
+   * 是否延迟渲染子组件
+   * 类型：boolean
+   * 默认值：true
+   */
+  lazyRender: makeBooleanProp(true),
+  /**
+   * 进入过渡的开始状态
+   * 类型：string
+   */
+  enterClass: makeStringProp(""),
+  /**
+   * 进入过渡的激活状态
+   * 类型：string
+   */
+  enterActiveClass: makeStringProp(""),
+  /**
+   * 进入过渡的结束状态
+   * 类型：string
+   */
+  enterToClass: makeStringProp(""),
+  /**
+   * 离开过渡的开始状态
+   * 类型：string
+   */
+  leaveClass: makeStringProp(""),
+  /**
+   * 离开过渡的激活状态
+   * 类型：string
+   */
+  leaveActiveClass: makeStringProp(""),
+  /**
+   * 离开过渡的结束状态
+   * 类型：string
+   */
+  leaveToClass: makeStringProp("")
+};
 exports.CELL_GROUP_KEY = CELL_GROUP_KEY;
+exports.CHECKBOX_GROUP_KEY = CHECKBOX_GROUP_KEY;
 exports.FORM_KEY = FORM_KEY;
 exports.GRID_KEY = GRID_KEY;
 exports.RADIO_GROUP_KEY = RADIO_GROUP_KEY;
 exports.TABBAR_KEY = TABBAR_KEY;
 exports._export_sfc = _export_sfc;
+exports.actionSheetProps = actionSheetProps;
 exports.addUnit = addUnit;
 exports.badgeProps = badgeProps;
 exports.buttonProps = buttonProps;
 exports.cellGroupProps = cellGroupProps;
+exports.checkboxProps = checkboxProps;
 exports.computed = computed;
+exports.context = context;
 exports.createSSRApp = createSSRApp;
 exports.debounce = debounce;
 exports.deepClone = deepClone;
@@ -8117,15 +8501,18 @@ exports.formProps = formProps;
 exports.getCurrentInstance = getCurrentInstance;
 exports.getPropByPath = getPropByPath;
 exports.getRect = getRect;
+exports.gradient = gradient;
 exports.gridItemProps = gridItemProps;
 exports.gridProps = gridProps;
 exports.iconProps = iconProps;
 exports.imgProps = imgProps;
 exports.index = index;
 exports.inputProps = inputProps;
+exports.isArray = isArray;
 exports.isDef = isDef;
 exports.isObj = isObj;
 exports.isPromise = isPromise;
+exports.loadingProps = loadingProps;
 exports.n = n;
 exports.nextTick$1 = nextTick$1;
 exports.o = o;
@@ -8136,7 +8523,9 @@ exports.onLaunch = onLaunch;
 exports.onLoad = onLoad;
 exports.onMounted = onMounted;
 exports.onShow = onShow;
+exports.overlayProps = overlayProps;
 exports.p = p;
+exports.popupProps = popupProps;
 exports.r = r;
 exports.radioGroupProps = radioGroupProps;
 exports.radioProps = radioProps;
@@ -8150,9 +8539,11 @@ exports.swiperProps = swiperProps;
 exports.t = t;
 exports.tabbarItemProps = tabbarItemProps;
 exports.tabbarProps = tabbarProps;
+exports.transitionProps = transitionProps;
 exports.unref = unref;
 exports.useCell = useCell;
 exports.useChildren = useChildren;
 exports.useParent = useParent;
+exports.useToast = useToast;
 exports.useTranslate = useTranslate;
 exports.watch = watch;

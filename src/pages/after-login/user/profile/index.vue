@@ -5,8 +5,8 @@
         <wd-img :width="80" :height="80" round mode="aspectFill"
           src="https://i0.hdslb.com/bfs/face/bea223e23f7577e71fb0978cb2ecf1141ab2a3ef.jpg@240w_240h_1c_1s_!web-avatar-nav.avif" />
         <div class="info">
-          <div>我是朴国昌</div>
-          <div>18227801689</div>
+          <div>{{ name }}</div>
+          <div>{{ phone }}</div>
         </div>
       </div>
     </div>
@@ -14,10 +14,18 @@
       <wd-grid-item icon="list" icon-size="30px" text="订单管理" />
       <wd-grid-item icon="star" icon-size="30px" text="评价管理" />
     </wd-grid>
+    <payment />
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import payment from '../payment/index.vue'
+import { ref } from 'vue'
+const name = ref<string>("我是朴国仓");
+const phone = ref<number>(18227801789);
+
+
+</script>
 <style scoped>
 .profile-contain {
   display: flex;
@@ -25,6 +33,7 @@
   justify-content: center;
   height: 20vh;
   background-color: rgb(100, 150, 255);
+
 }
 
 .profile {
@@ -34,6 +43,7 @@
   justify-content: space-evenly;
   align-items: center;
   border-radius: 10px 10px 0 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   background-color: white;
 }
 
