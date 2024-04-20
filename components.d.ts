@@ -10,6 +10,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     404: typeof import('./src/components/404/index.vue')['default']
+    List: typeof import('./src/components/list/index.vue')['default']
     Tabbar: typeof import('./src/components/tabbar/index.vue')['default']
     WdBadge: typeof import('wot-design-uni/components/wd-badge/wd-badge.vue')['default']
     WdButton: typeof import('wot-design-uni/components/wd-button/wd-button.vue')['default']
