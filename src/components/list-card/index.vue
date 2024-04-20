@@ -4,31 +4,38 @@
       <template #title>
         <view class="header">
           <view class="time">2020-02-03</view>
-          <view class="status">已完成</view>
+          <!-- TODO: 加个颜色 -->
+          <view class="status">{{ ORDER_STATUS[info.status] }}</view>
         </view>
       </template>
 
       <view class="content">
         <view class="goods-list">
-          <template v-for="(item, index) in 4" :key="index">
-            <view
-              class="goods-item"
-              style="color: rgba(0, 0, 0, 0.85); font-size: 16px"
-            >
-              <view class="goods-info">
-                <view class="goods-name">商品名字</view>
-                <view class="goods-count">(x30)</view>
+          <template v-for="(cnt, index) in info.clotheCount" :key="index">
+            <template v-if="cnt > 0">
+              <view
+                class="goods-item"
+                style="color: rgba(0, 0, 0, 0.85); font-size: 16px"
+              >
+                <view class="goods-info">
+                  <view class="goods-name">{{ CLOTHE_TYPE[index] }}</view>
+                  <view class="goods-count"> (x{{ cnt }}) </view>
+                </view>
+                <view class="goods-price">1000元</view>
               </view>
-              <view class="goods-price">1000元</view>
-            </view>
+            </template>
           </template>
         </view>
+        <view class="location">地址：{{ info.location }}</view>
       </view>
 
       <template #footer>
-        <view>
-          <wd-button size="small" style="margin-right: 8px">评价</wd-button>
-          <wd-button size="small" plain>立即支付</wd-button>
+        <view class="footer">
+          <view class="total-price">总计: 1160元</view>
+          <view class="buttons">
+            <wd-button size="small" style="margin-right: 8px">评价</wd-button>
+            <wd-button size="small" plain>立即支付</wd-button>
+          </view>
         </view>
       </template>
     </wd-card>
@@ -36,15 +43,33 @@
 </template>
 
 <script setup lang="ts">
+// TODO：要请求商家报价列表
+import { ref } from "vue";
 const CLOTHE_TYPE = ["西装", "皮衣", "棉衣", "化纤"];
-
-const data = {
-  clotheCount: [1, 0, 0, 0],
-  location: "旧日都城大道一段114514号",
-  time: "2024-04-20",
-  status: 10,
-  comment: "",
+const ORDER_STATUS = {
+  0: "全部",
+  10: "待接单",
+  20: "待付款",
+  30: "处理中",
+  40: "已完成",
 };
+// const data = {
+//   clotheCount: [1, 0, 0, 0],
+//   location: "旧日都城大道一段114514号",
+//   time: "2024-04-20",
+//   status: 10,
+//   comment: "",
+// };
+
+const { info } = defineProps<{
+  info: {
+    clotheCount: Array<number>;
+    location: string;
+    time: string;
+    status: number;
+    comment: string;
+  };
+}>();
 </script>
 
 <script lang="ts">
@@ -75,9 +100,15 @@ export default {
 
 .content {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
+  /* align-items: center; */
+
+  .location {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
   .goods-list {
     width: 100%;
     display: flex;
@@ -101,6 +132,17 @@ export default {
         justify-content: start;
       }
     }
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .total-price {
+    font-size: 16px;
+    font-weight: 800;
+    color: #ff3700;
   }
 }
 </style>
