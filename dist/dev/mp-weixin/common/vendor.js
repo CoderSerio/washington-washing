@@ -7266,6 +7266,24 @@ const cellGroupProps = {
    */
   border: makeBooleanProp(false)
 };
+const RADIO_GROUP_KEY = Symbol("wd-radio-group");
+const radioGroupProps = {
+  ...baseProps,
+  /** 会自动选中value对应的单选框 */
+  modelValue: [String, Number, Boolean],
+  /** 单选框形状，可选值为 dot / button / check，默认为 check */
+  shape: makeStringProp("check"),
+  /** 选中的颜色，默认为 #4D80F0 */
+  checkedColor: String,
+  /** 是否禁用，默认为 false */
+  disabled: makeBooleanProp(false),
+  /** 表单模式，默认为 false */
+  cell: makeBooleanProp(false),
+  /** 设置大小，默认为空 */
+  size: makeStringProp(""),
+  /** 同行展示，默认为 false */
+  inline: makeBooleanProp(false)
+};
 function useParent(key) {
   const parent = inject(key, null);
   if (parent) {
@@ -7284,6 +7302,34 @@ function useParent(key) {
     index: ref(-1)
   };
 }
+const radioProps = {
+  ...baseProps,
+  /** 选中时的值 */
+  value: makeRequiredProp([String, Number, Boolean]),
+  /** 单选框的形状 */
+  shape: String,
+  /** 选中的颜色 */
+  checkedColor: String,
+  /** 禁用 */
+  disabled: {
+    type: [Boolean, null],
+    default: null
+  },
+  /** 单元格 */
+  cell: {
+    type: [Boolean, null],
+    default: null
+  },
+  /** 大小 */
+  size: String,
+  /** 内联 */
+  inline: {
+    type: [Boolean, null],
+    default: null
+  },
+  /** 最大宽度 */
+  maxWidth: String
+};
 function useCell() {
   const { parent: cellGroup, index: index2 } = useParent(CELL_GROUP_KEY);
   const border = computed(() => {
@@ -7881,6 +7927,7 @@ const swiperNavprops = {
 };
 exports.CELL_GROUP_KEY = CELL_GROUP_KEY;
 exports.FORM_KEY = FORM_KEY;
+exports.RADIO_GROUP_KEY = RADIO_GROUP_KEY;
 exports.TABBAR_KEY = TABBAR_KEY;
 exports._export_sfc = _export_sfc;
 exports.addUnit = addUnit;
@@ -7915,6 +7962,8 @@ exports.onMounted = onMounted;
 exports.onShow = onShow;
 exports.p = p;
 exports.r = r;
+exports.radioGroupProps = radioGroupProps;
+exports.radioProps = radioProps;
 exports.reactive = reactive;
 exports.ref = ref;
 exports.requestAnimationFrame = requestAnimationFrame;
