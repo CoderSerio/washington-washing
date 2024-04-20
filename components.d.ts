@@ -12,7 +12,6 @@ declare module '@vue/runtime-core' {
     404: typeof import('./src/components/404/index.vue')['default']
     Tabbar: typeof import('./src/components/tabbar/index.vue')['default']
     WdBadge: typeof import('wot-design-uni/components/wd-badge/wd-badge.vue')['default']
-    WdButon: typeof import('wot-design-uni/components/wd-buton/wd-buton.vue')['default']
     WdButton: typeof import('wot-design-uni/components/wd-button/wd-button.vue')['default']
     WdCellGroup: typeof import('wot-design-uni/components/wd-cell-group/wd-cell-group.vue')['default']
     WdForm: typeof import('wot-design-uni/components/wd-form/wd-form.vue')['default']

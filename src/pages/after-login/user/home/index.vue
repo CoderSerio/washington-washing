@@ -9,17 +9,17 @@
 
   <view class="buttons">
     <view class="main-buttons">
-      <wd-button :round="false" block>主要按钮</wd-button>
+      <wd-button :round="false" block>开始洗衣</wd-button>
     </view>
 
     <view class="sub-buttons">
       <view class="left">
-        <wd-button :round="false" type="primary" plain>次要按钮</wd-button>
-        <wd-button :round="false" type="primary" plain>次要按钮</wd-button>
+        <wd-button :round="false" type="error" plain>次要按钮</wd-button>
+        <wd-button :round="false" type="error" plain>次要按钮</wd-button>
       </view>
 
       <view class="right">
-        <wd-button :round="false" type="primary" plain>次要按钮</wd-button>
+        <wd-button :round="false" type="success">次要按钮</wd-button>
       </view>
     </view>
   </view>
