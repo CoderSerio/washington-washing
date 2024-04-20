@@ -1,15 +1,25 @@
 <template>
-  <wd-tabbar v-model="tabbar">
-    <wd-tabbar-item title="首页" icon="home"></wd-tabbar-item>
-    <wd-tabbar-item title="发布订单" icon="add-circle"></wd-tabbar-item>
-    <wd-tabbar-item title="我的" icon="user"></wd-tabbar-item>
+  <wd-tabbar @change="handleChange" v-model="tabbar">
+    <template v-for="item in dataList" :key="item.route">
+      <wd-tabbar-item :title="item.title" :icon="item.icon"></wd-tabbar-item>
+    </template>
   </wd-tabbar>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-
+import { ref, watch } from "vue";
 const tabbar = ref(1);
+const { routeTo, dataList = [] } = defineProps<{
+  dataList: Array<
+    Record<string, any> & { title: string; icon: string; route: string }
+  >;
+  routeTo: (name: string) => void;
+  routeName: string;
+}>();
+
+const handleChange = (data: any) => {
+  routeTo(dataList[data.value].route);
+};
 </script>
 
 <style scoped></style>
