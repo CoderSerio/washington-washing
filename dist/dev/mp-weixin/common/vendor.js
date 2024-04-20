@@ -6873,146 +6873,6 @@ const onShow = /* @__PURE__ */ createHook(ON_SHOW);
 const onHide = /* @__PURE__ */ createHook(ON_HIDE);
 const onLaunch = /* @__PURE__ */ createHook(ON_LAUNCH);
 const onLoad = /* @__PURE__ */ createHook(ON_LOAD);
-const _b64chars = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"];
-const _mkUriSafe = (src) => src.replace(/[+/]/g, (m0) => m0 === "+" ? "-" : "_").replace(/=+\$/m, "");
-const fromUint8Array = (src, rfc4648 = false) => {
-  let b642 = "";
-  for (let i = 0, l = src.length; i < l; i += 3) {
-    const [a0, a1, a2] = [src[i], src[i + 1], src[i + 2]];
-    const ord = a0 << 16 | a1 << 8 | a2;
-    b642 += _b64chars[ord >>> 18];
-    b642 += _b64chars[ord >>> 12 & 63];
-    b642 += typeof a1 !== "undefined" ? _b64chars[ord >>> 6 & 63] : "=";
-    b642 += typeof a2 !== "undefined" ? _b64chars[ord & 63] : "=";
-  }
-  return rfc4648 ? _mkUriSafe(b642) : b642;
-};
-const _btoa = typeof btoa === "function" ? (s2) => btoa(s2) : (s2) => {
-  if (s2.charCodeAt(0) > 255) {
-    throw new RangeError("The string contains invalid characters.");
-  }
-  return fromUint8Array(Uint8Array.from(s2, (c) => c.charCodeAt(0)));
-};
-const utob = (src) => unescape(encodeURIComponent(src));
-function encode(src, rfc4648 = false) {
-  const b642 = _btoa(utob(src));
-  return rfc4648 ? _mkUriSafe(b642) : b642;
-}
-const numericProp = [Number, String];
-const makeRequiredProp = (type) => ({
-  type,
-  required: true
-});
-const makeArrayProp = () => ({
-  type: Array,
-  default: () => []
-});
-const makeBooleanProp = (defaultVal) => ({
-  type: Boolean,
-  default: defaultVal
-});
-const makeNumberProp = (defaultVal) => ({
-  type: Number,
-  default: defaultVal
-});
-const makeNumericProp = (defaultVal) => ({
-  type: numericProp,
-  default: defaultVal
-});
-const makeStringProp = (defaultVal) => ({
-  type: String,
-  default: defaultVal
-});
-const baseProps = {
-  /**
-   * 自定义根节点样式
-   */
-  customStyle: makeStringProp(""),
-  /**
-   * 自定义根节点样式类
-   */
-  customClass: makeStringProp("")
-};
-const buttonProps = {
-  ...baseProps,
-  /**
-   * 幽灵按钮
-   */
-  plain: makeBooleanProp(false),
-  /**
-   * 圆角按钮
-   */
-  round: makeBooleanProp(true),
-  /**
-   * 禁用按钮
-   */
-  disabled: makeBooleanProp(false),
-  /**
-   * 是否细边框
-   */
-  hairline: makeBooleanProp(false),
-  /**
-   * 块状按钮
-   */
-  block: makeBooleanProp(false),
-  /**
-   * 按钮类型，可选值：primary / success / info / warning / error / text / icon
-   */
-  type: makeStringProp("primary"),
-  /**
-   * 按钮尺寸，可选值：small / medium / large
-   */
-  size: makeStringProp("medium"),
-  /**
-   * 图标类名
-   */
-  icon: String,
-  /**
-   * 加载中按钮
-   */
-  loading: makeBooleanProp(false),
-  /**
-   * 加载图标颜色
-   */
-  loadingColor: String,
-  /**
-   * 开放能力
-   */
-  openType: String,
-  formType: String,
-  /**
-   * 指定是否阻止本节点的祖先节点出现点击态
-   */
-  hoverStopPropagation: Boolean,
-  /**
-   * 指定返回用户信息的语言，zh_CN 简体中文，zh_TW 繁体中文，en 英文
-   */
-  lang: String,
-  /**
-   * 会话来源，open-type="contact"时有效
-   */
-  sessionFrom: String,
-  /**
-   * 会话内消息卡片标题，open-type="contact"时有效
-   */
-  sendMessageTitle: String,
-  /**
-   * 会话内消息卡片点击跳转小程序路径，open-type="contact"时有效
-   */
-  sendMessagePath: String,
-  /**
-   * 会话内消息卡片图片，open-type="contact"时有效
-   */
-  sendMessageImg: String,
-  /**
-   * 打开 APP 时，向 APP 传递的参数，open-type=launchApp时有效
-   */
-  appParameter: String,
-  /**
-   * 是否显示会话内消息卡片，设置此参数为 true，用户进入客服会话会在右下角显示"可能要发送的小程序"提示，用户点击后可以快速发送小程序消息，open-type="contact"时有效
-   */
-  showMessageCard: Boolean
-};
 function addUnit(num) {
   return Number.isNaN(Number(num)) ? num : `${num}px`;
 }
@@ -7227,6 +7087,238 @@ function useChildren(key) {
     linkChildren
   };
 }
+const numericProp = [Number, String];
+const makeRequiredProp = (type) => ({
+  type,
+  required: true
+});
+const makeArrayProp = () => ({
+  type: Array,
+  default: () => []
+});
+const makeBooleanProp = (defaultVal) => ({
+  type: Boolean,
+  default: defaultVal
+});
+const makeNumberProp = (defaultVal) => ({
+  type: Number,
+  default: defaultVal
+});
+const makeNumericProp = (defaultVal) => ({
+  type: numericProp,
+  default: defaultVal
+});
+const makeStringProp = (defaultVal) => ({
+  type: String,
+  default: defaultVal
+});
+const baseProps = {
+  /**
+   * 自定义根节点样式
+   */
+  customStyle: makeStringProp(""),
+  /**
+   * 自定义根节点样式类
+   */
+  customClass: makeStringProp("")
+};
+const TABBAR_KEY = Symbol("wd-tabbar");
+const tabbarProps = {
+  ...baseProps,
+  /**
+   * 选中标签的索引值或者名称
+   */
+  modelValue: makeNumericProp(0),
+  /**
+   * 是否固定在底部
+   */
+  fixed: makeBooleanProp(false),
+  /**
+   * 是否显示顶部边框
+   */
+  bordered: makeBooleanProp(true),
+  /**
+   * 是否设置底部安全距禿（iPhone X 类型的机型）
+   */
+  safeAreaInsetBottom: makeBooleanProp(false),
+  /**
+   * 标签栏的形状。可选项：default/round
+   */
+  shape: makeStringProp("default"),
+  /**
+   * 激活标签的颜色
+   */
+  activeColor: String,
+  /**
+   * 未激活标签的颜色
+   */
+  inactiveColor: String,
+  /**
+   * 固定在底部时，是否在标签位置生成一个等高的占位元素
+   */
+  placeholder: makeBooleanProp(false),
+  /**
+   * 自定义组件的层级
+   */
+  zIndex: makeNumberProp(99)
+};
+function useParent(key) {
+  const parent = inject(key, null);
+  if (parent) {
+    const instance = getCurrentInstance();
+    const { link, unlink, internalChildren } = parent;
+    link(instance);
+    onUnmounted(() => unlink(instance));
+    const index2 = computed(() => internalChildren.indexOf(instance));
+    return {
+      parent,
+      index: index2
+    };
+  }
+  return {
+    parent: null,
+    index: ref(-1)
+  };
+}
+const tabbarItemProps = {
+  ...baseProps,
+  /**
+   * 标签页的标题
+   */
+  title: String,
+  /**
+   * 唯一标识符
+   */
+  name: numericProp,
+  /**
+   * 图标
+   */
+  icon: String,
+  /**
+   * 徽标显示值
+   */
+  value: {
+    type: [Number, String, null],
+    default: null
+  },
+  /**
+   * 是否点状徽标
+   */
+  isDot: Boolean,
+  /**
+   * 徽标最大值
+   */
+  max: makeNumberProp(99),
+  /**
+   * 徽标属性，透传给 Badge 组件
+   */
+  badgeProps: Object
+};
+const _b64chars = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"];
+const _mkUriSafe = (src) => src.replace(/[+/]/g, (m0) => m0 === "+" ? "-" : "_").replace(/=+\$/m, "");
+const fromUint8Array = (src, rfc4648 = false) => {
+  let b642 = "";
+  for (let i = 0, l = src.length; i < l; i += 3) {
+    const [a0, a1, a2] = [src[i], src[i + 1], src[i + 2]];
+    const ord = a0 << 16 | a1 << 8 | a2;
+    b642 += _b64chars[ord >>> 18];
+    b642 += _b64chars[ord >>> 12 & 63];
+    b642 += typeof a1 !== "undefined" ? _b64chars[ord >>> 6 & 63] : "=";
+    b642 += typeof a2 !== "undefined" ? _b64chars[ord & 63] : "=";
+  }
+  return rfc4648 ? _mkUriSafe(b642) : b642;
+};
+const _btoa = typeof btoa === "function" ? (s2) => btoa(s2) : (s2) => {
+  if (s2.charCodeAt(0) > 255) {
+    throw new RangeError("The string contains invalid characters.");
+  }
+  return fromUint8Array(Uint8Array.from(s2, (c) => c.charCodeAt(0)));
+};
+const utob = (src) => unescape(encodeURIComponent(src));
+function encode(src, rfc4648 = false) {
+  const b642 = _btoa(utob(src));
+  return rfc4648 ? _mkUriSafe(b642) : b642;
+}
+const buttonProps = {
+  ...baseProps,
+  /**
+   * 幽灵按钮
+   */
+  plain: makeBooleanProp(false),
+  /**
+   * 圆角按钮
+   */
+  round: makeBooleanProp(true),
+  /**
+   * 禁用按钮
+   */
+  disabled: makeBooleanProp(false),
+  /**
+   * 是否细边框
+   */
+  hairline: makeBooleanProp(false),
+  /**
+   * 块状按钮
+   */
+  block: makeBooleanProp(false),
+  /**
+   * 按钮类型，可选值：primary / success / info / warning / error / text / icon
+   */
+  type: makeStringProp("primary"),
+  /**
+   * 按钮尺寸，可选值：small / medium / large
+   */
+  size: makeStringProp("medium"),
+  /**
+   * 图标类名
+   */
+  icon: String,
+  /**
+   * 加载中按钮
+   */
+  loading: makeBooleanProp(false),
+  /**
+   * 加载图标颜色
+   */
+  loadingColor: String,
+  /**
+   * 开放能力
+   */
+  openType: String,
+  formType: String,
+  /**
+   * 指定是否阻止本节点的祖先节点出现点击态
+   */
+  hoverStopPropagation: Boolean,
+  /**
+   * 指定返回用户信息的语言，zh_CN 简体中文，zh_TW 繁体中文，en 英文
+   */
+  lang: String,
+  /**
+   * 会话来源，open-type="contact"时有效
+   */
+  sessionFrom: String,
+  /**
+   * 会话内消息卡片标题，open-type="contact"时有效
+   */
+  sendMessageTitle: String,
+  /**
+   * 会话内消息卡片点击跳转小程序路径，open-type="contact"时有效
+   */
+  sendMessagePath: String,
+  /**
+   * 会话内消息卡片图片，open-type="contact"时有效
+   */
+  sendMessageImg: String,
+  /**
+   * 打开 APP 时，向 APP 传递的参数，open-type=launchApp时有效
+   */
+  appParameter: String,
+  /**
+   * 是否显示会话内消息卡片，设置此参数为 true，用户进入客服会话会在右下角显示"可能要发送的小程序"提示，用户点击后可以快速发送小程序消息，open-type="contact"时有效
+   */
+  showMessageCard: Boolean
+};
 const FORM_KEY = Symbol("wd-form");
 const formProps = {
   ...baseProps,
@@ -7284,24 +7376,6 @@ const radioGroupProps = {
   /** 同行展示，默认为 false */
   inline: makeBooleanProp(false)
 };
-function useParent(key) {
-  const parent = inject(key, null);
-  if (parent) {
-    const instance = getCurrentInstance();
-    const { link, unlink, internalChildren } = parent;
-    link(instance);
-    onUnmounted(() => unlink(instance));
-    const index2 = computed(() => internalChildren.indexOf(instance));
-    return {
-      parent,
-      index: index2
-    };
-  }
-  return {
-    parent: null,
-    index: ref(-1)
-  };
-}
 const radioProps = {
   ...baseProps,
   /** 选中时的值 */
@@ -7639,99 +7713,6 @@ const inputProps = {
    */
   rules: makeArrayProp()
 };
-const TABBAR_KEY = Symbol("wd-tabbar");
-const tabbarProps = {
-  ...baseProps,
-  /**
-   * 选中标签的索引值或者名称
-   */
-  modelValue: makeNumericProp(0),
-  /**
-   * 是否固定在底部
-   */
-  fixed: makeBooleanProp(false),
-  /**
-   * 是否显示顶部边框
-   */
-  bordered: makeBooleanProp(true),
-  /**
-   * 是否设置底部安全距禿（iPhone X 类型的机型）
-   */
-  safeAreaInsetBottom: makeBooleanProp(false),
-  /**
-   * 标签栏的形状。可选项：default/round
-   */
-  shape: makeStringProp("default"),
-  /**
-   * 激活标签的颜色
-   */
-  activeColor: String,
-  /**
-   * 未激活标签的颜色
-   */
-  inactiveColor: String,
-  /**
-   * 固定在底部时，是否在标签位置生成一个等高的占位元素
-   */
-  placeholder: makeBooleanProp(false),
-  /**
-   * 自定义组件的层级
-   */
-  zIndex: makeNumberProp(99)
-};
-const tabbarItemProps = {
-  ...baseProps,
-  /**
-   * 标签页的标题
-   */
-  title: String,
-  /**
-   * 唯一标识符
-   */
-  name: numericProp,
-  /**
-   * 图标
-   */
-  icon: String,
-  /**
-   * 徽标显示值
-   */
-  value: {
-    type: [Number, String, null],
-    default: null
-  },
-  /**
-   * 是否点状徽标
-   */
-  isDot: Boolean,
-  /**
-   * 徽标最大值
-   */
-  max: makeNumberProp(99),
-  /**
-   * 徽标属性，透传给 Badge 组件
-   */
-  badgeProps: Object
-};
-const iconProps = {
-  ...baseProps,
-  /**
-   * 使用的图标名字，可以使用链接图片
-   */
-  name: makeRequiredProp(String),
-  /**
-   * 图标的颜色
-   */
-  color: String,
-  /**
-   * 图标的字体大小
-   */
-  size: String,
-  /**
-   * 类名前缀，用于使用自定义图标
-   */
-  classPrefix: makeStringProp("wd-icon")
-};
 const swiperProps = {
   ...baseProps,
   /**
@@ -7894,6 +7875,25 @@ const badgeProps = {
    */
   right: Number
 };
+const iconProps = {
+  ...baseProps,
+  /**
+   * 使用的图标名字，可以使用链接图片
+   */
+  name: makeRequiredProp(String),
+  /**
+   * 图标的颜色
+   */
+  color: String,
+  /**
+   * 图标的字体大小
+   */
+  size: String,
+  /**
+   * 类名前缀，用于使用自定义图标
+   */
+  classPrefix: makeStringProp("wd-icon")
+};
 const swiperNavprops = {
   ...baseProps,
   /**
@@ -7925,6 +7925,29 @@ const swiperNavprops = {
    */
   type: makeStringProp("dots")
 };
+const cardProps = {
+  ...baseProps,
+  /**
+   * 卡片类型
+   */
+  type: String,
+  /**
+   * 卡片标题
+   */
+  title: String,
+  /**
+   * 标题自定义样式
+   */
+  customTitleClass: makeStringProp(""),
+  /**
+   * 内容自定义样式
+   */
+  customContentClass: makeStringProp(""),
+  /**
+   * 底部自定义样式
+   */
+  customFooterClass: makeStringProp("")
+};
 exports.CELL_GROUP_KEY = CELL_GROUP_KEY;
 exports.FORM_KEY = FORM_KEY;
 exports.RADIO_GROUP_KEY = RADIO_GROUP_KEY;
@@ -7933,6 +7956,7 @@ exports._export_sfc = _export_sfc;
 exports.addUnit = addUnit;
 exports.badgeProps = badgeProps;
 exports.buttonProps = buttonProps;
+exports.cardProps = cardProps;
 exports.cellGroupProps = cellGroupProps;
 exports.computed = computed;
 exports.createSSRApp = createSSRApp;
