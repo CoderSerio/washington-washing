@@ -16,6 +16,7 @@ declare module '@vue/runtime-core' {
     WdBadge: typeof import('wot-design-uni/components/wd-badge/wd-badge.vue')['default']
     WdButton: typeof import('wot-design-uni/components/wd-button/wd-button.vue')['default']
     WdCard: typeof import('wot-design-uni/components/wd-card/wd-card.vue')['default']
+    WdCell: typeof import('wot-design-uni/components/wd-cell/wd-cell.vue')['default']
     WdCellGroup: typeof import('wot-design-uni/components/wd-cell-group/wd-cell-group.vue')['default']
     WdForm: typeof import('wot-design-uni/components/wd-form/wd-form.vue')['default']
     WdGrid: typeof import('wot-design-uni/components/wd-grid/wd-grid.vue')['default']

@@ -5,7 +5,7 @@
         <view class="header">
           <view class="time">2020-02-03</view>
           <!-- TODO: 加个颜色 -->
-          <view class="status">{{ ORDER_STATUS[info.status] }}</view>
+          <view class="status">{{ ORDER_STATUS[`${info.status}`] }}</view>
         </view>
       </template>
 
