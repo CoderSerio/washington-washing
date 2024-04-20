@@ -21,7 +21,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
   }
 });
-const App = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__file", "D:/code/fe/programs/washington-washing/src/App.vue"]]);
+const App = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__file", "F:/前端项目/其他毕设/washington-wash/src/App.vue"]]);
 function createApp() {
   const app = common_vendor.createSSRApp(App);
   return {
