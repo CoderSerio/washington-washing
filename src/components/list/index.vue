@@ -1,8 +1,9 @@
 <template>
-  <view class=""></view>
-  <!-- <template v-for="(item, index) in data" :key="index"> -->
-  <listCard></listCard>
-  <!-- </template> -->
+  <view class="page-wrapper">
+    <template v-for="(item, index) in data" :key="index">
+      <listCard></listCard>
+    </template>
+  </view>
 </template>
 
 <script setup lang="ts">
@@ -16,4 +17,14 @@ import listCard from "../list-card/index.vue";
 const data = [{}, {}, {}];
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.page-wrapper {
+  background-color: #eee;
+  height: 95vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+</style>
