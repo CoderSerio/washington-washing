@@ -8,6 +8,9 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
+
+const CLOTHE_TYPE = ["西装", "皮衣", "棉衣", "化纤"];
+
 const tabbar = ref(1);
 const { routeTo, dataList = [] } = defineProps<{
   dataList: Array<

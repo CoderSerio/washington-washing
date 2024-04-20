@@ -6873,146 +6873,6 @@ const onShow = /* @__PURE__ */ createHook(ON_SHOW);
 const onHide = /* @__PURE__ */ createHook(ON_HIDE);
 const onLaunch = /* @__PURE__ */ createHook(ON_LAUNCH);
 const onLoad = /* @__PURE__ */ createHook(ON_LOAD);
-const _b64chars = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"];
-const _mkUriSafe = (src) => src.replace(/[+/]/g, (m0) => m0 === "+" ? "-" : "_").replace(/=+\$/m, "");
-const fromUint8Array = (src, rfc4648 = false) => {
-  let b642 = "";
-  for (let i = 0, l = src.length; i < l; i += 3) {
-    const [a0, a1, a2] = [src[i], src[i + 1], src[i + 2]];
-    const ord = a0 << 16 | a1 << 8 | a2;
-    b642 += _b64chars[ord >>> 18];
-    b642 += _b64chars[ord >>> 12 & 63];
-    b642 += typeof a1 !== "undefined" ? _b64chars[ord >>> 6 & 63] : "=";
-    b642 += typeof a2 !== "undefined" ? _b64chars[ord & 63] : "=";
-  }
-  return rfc4648 ? _mkUriSafe(b642) : b642;
-};
-const _btoa = typeof btoa === "function" ? (s2) => btoa(s2) : (s2) => {
-  if (s2.charCodeAt(0) > 255) {
-    throw new RangeError("The string contains invalid characters.");
-  }
-  return fromUint8Array(Uint8Array.from(s2, (c) => c.charCodeAt(0)));
-};
-const utob = (src) => unescape(encodeURIComponent(src));
-function encode(src, rfc4648 = false) {
-  const b642 = _btoa(utob(src));
-  return rfc4648 ? _mkUriSafe(b642) : b642;
-}
-const numericProp = [Number, String];
-const makeRequiredProp = (type) => ({
-  type,
-  required: true
-});
-const makeArrayProp = () => ({
-  type: Array,
-  default: () => []
-});
-const makeBooleanProp = (defaultVal) => ({
-  type: Boolean,
-  default: defaultVal
-});
-const makeNumberProp = (defaultVal) => ({
-  type: Number,
-  default: defaultVal
-});
-const makeNumericProp = (defaultVal) => ({
-  type: numericProp,
-  default: defaultVal
-});
-const makeStringProp = (defaultVal) => ({
-  type: String,
-  default: defaultVal
-});
-const baseProps = {
-  /**
-   * 自定义根节点样式
-   */
-  customStyle: makeStringProp(""),
-  /**
-   * 自定义根节点样式类
-   */
-  customClass: makeStringProp("")
-};
-const buttonProps = {
-  ...baseProps,
-  /**
-   * 幽灵按钮
-   */
-  plain: makeBooleanProp(false),
-  /**
-   * 圆角按钮
-   */
-  round: makeBooleanProp(true),
-  /**
-   * 禁用按钮
-   */
-  disabled: makeBooleanProp(false),
-  /**
-   * 是否细边框
-   */
-  hairline: makeBooleanProp(false),
-  /**
-   * 块状按钮
-   */
-  block: makeBooleanProp(false),
-  /**
-   * 按钮类型，可选值：primary / success / info / warning / error / text / icon
-   */
-  type: makeStringProp("primary"),
-  /**
-   * 按钮尺寸，可选值：small / medium / large
-   */
-  size: makeStringProp("medium"),
-  /**
-   * 图标类名
-   */
-  icon: String,
-  /**
-   * 加载中按钮
-   */
-  loading: makeBooleanProp(false),
-  /**
-   * 加载图标颜色
-   */
-  loadingColor: String,
-  /**
-   * 开放能力
-   */
-  openType: String,
-  formType: String,
-  /**
-   * 指定是否阻止本节点的祖先节点出现点击态
-   */
-  hoverStopPropagation: Boolean,
-  /**
-   * 指定返回用户信息的语言，zh_CN 简体中文，zh_TW 繁体中文，en 英文
-   */
-  lang: String,
-  /**
-   * 会话来源，open-type="contact"时有效
-   */
-  sessionFrom: String,
-  /**
-   * 会话内消息卡片标题，open-type="contact"时有效
-   */
-  sendMessageTitle: String,
-  /**
-   * 会话内消息卡片点击跳转小程序路径，open-type="contact"时有效
-   */
-  sendMessagePath: String,
-  /**
-   * 会话内消息卡片图片，open-type="contact"时有效
-   */
-  sendMessageImg: String,
-  /**
-   * 打开 APP 时，向 APP 传递的参数，open-type=launchApp时有效
-   */
-  appParameter: String,
-  /**
-   * 是否显示会话内消息卡片，设置此参数为 true，用户进入客服会话会在右下角显示"可能要发送的小程序"提示，用户点击后可以快速发送小程序消息，open-type="contact"时有效
-   */
-  showMessageCard: Boolean
-};
 function addUnit(num) {
   return Number.isNaN(Number(num)) ? num : `${num}px`;
 }
@@ -7234,192 +7094,67 @@ const getPropByPath = (obj, path) => {
   }
 };
 const isDate = (val) => Object.prototype.toString.call(val) === "[object Date]" && !Number.isNaN(val.getTime());
-function isVNode(value) {
-  return value ? value.__v_isVNode === true : false;
-}
-function flattenVNodes(children) {
-  const result = [];
-  const traverse2 = (children2) => {
-    if (Array.isArray(children2)) {
-      children2.forEach((child) => {
-        var _a2;
-        if (isVNode(child)) {
-          result.push(child);
-          if ((_a2 = child.component) == null ? void 0 : _a2.subTree) {
-            result.push(child.component.subTree);
-            traverse2(child.component.subTree.children);
-          }
-          if (child.children) {
-            traverse2(child.children);
-          }
-        }
-      });
+const toastDefaultOptionKey = "__TOAST_OPTION__";
+const defaultOptions = {
+  msg: "",
+  duration: 2e3,
+  loadingType: "outline",
+  loadingColor: "#4D80F0",
+  iconColor: "#4D80F0",
+  iconSize: 42,
+  loadingSize: 42,
+  customIcon: false,
+  position: "middle",
+  show: false,
+  zIndex: 100
+};
+function useToast(selector = "") {
+  let timer = null;
+  const toastOption = ref(defaultOptions);
+  const toastOptionKey = selector ? toastDefaultOptionKey + selector : toastDefaultOptionKey;
+  provide(toastOptionKey, toastOption);
+  const createMethod = (toastOptions) => {
+    return (options) => {
+      return show(deepMerge(toastOptions, typeof options === "string" ? { msg: options } : options));
+    };
+  };
+  const show = (option) => {
+    const options = deepMerge(defaultOptions, typeof option === "string" ? { msg: option } : option);
+    toastOption.value = deepMerge(options, {
+      show: true
+    });
+    timer && clearTimeout(timer);
+    if (toastOption.value.duration && toastOption.value.duration > 0) {
+      timer = setTimeout(() => {
+        timer && clearTimeout(timer);
+        close();
+      }, options.duration);
     }
   };
-  traverse2(children);
-  return result;
-}
-const findVNodeIndex = (vnodes, vnode) => {
-  const index2 = vnodes.indexOf(vnode);
-  if (index2 === -1) {
-    return vnodes.findIndex((item) => vnode.key !== void 0 && vnode.key !== null && item.type === vnode.type && item.key === vnode.key);
-  }
-  return index2;
-};
-function sortChildren(parent, publicChildren, internalChildren) {
-  const vnodes = parent && parent.subTree && parent.subTree.children ? flattenVNodes(parent.subTree.children) : [];
-  internalChildren.sort((a, b) => findVNodeIndex(vnodes, a.vnode) - findVNodeIndex(vnodes, b.vnode));
-  const orderedPublicChildren = internalChildren.map((item) => item.proxy);
-  publicChildren.sort((a, b) => {
-    const indexA = orderedPublicChildren.indexOf(a);
-    const indexB = orderedPublicChildren.indexOf(b);
-    return indexA - indexB;
+  const loading = createMethod({
+    iconName: "loading",
+    duration: 0,
+    cover: true
   });
-}
-function useChildren(key) {
-  const publicChildren = reactive([]);
-  const internalChildren = reactive([]);
-  const parent = getCurrentInstance();
-  const linkChildren = (value) => {
-    const link = (child) => {
-      if (child.proxy) {
-        internalChildren.push(child);
-        publicChildren.push(child.proxy);
-        sortChildren(parent, publicChildren, internalChildren);
-      }
-    };
-    const unlink = (child) => {
-      const index2 = internalChildren.indexOf(child);
-      publicChildren.splice(index2, 1);
-      internalChildren.splice(index2, 1);
-    };
-    provide(
-      key,
-      Object.assign(
-        {
-          link,
-          unlink,
-          children: publicChildren,
-          internalChildren
-        },
-        value
-      )
-    );
+  const success = createMethod({
+    iconName: "success",
+    duration: 1500
+  });
+  const error = createMethod({ iconName: "error" });
+  const warning = createMethod({ iconName: "warning" });
+  const info = createMethod({ iconName: "info" });
+  const close = () => {
+    toastOption.value = { show: false };
   };
   return {
-    children: publicChildren,
-    linkChildren
+    show,
+    loading,
+    success,
+    error,
+    warning,
+    info,
+    close
   };
-}
-const FORM_KEY = Symbol("wd-form");
-const formProps = {
-  ...baseProps,
-  /**
-   * 表单数据对象
-   */
-  model: makeRequiredProp(Object),
-  /**
-   * 表单验证规则
-   */
-  rules: {
-    type: Object,
-    default: () => ({})
-  },
-  /**
-   * 是否在输入时重置表单校验信息
-   */
-  resetOnChange: makeBooleanProp(true)
-};
-const CELL_GROUP_KEY = Symbol("wd-cell-group");
-const cellGroupProps = {
-  ...baseProps,
-  /**
-   * 分组标题
-   */
-  title: String,
-  /**
-   * 分组右侧内容
-   */
-  value: String,
-  /**
-   * 分组启用插槽
-   */
-  useSlot: makeBooleanProp(false),
-  /**
-   * 是否展示边框线
-   */
-  border: makeBooleanProp(false)
-};
-const RADIO_GROUP_KEY = Symbol("wd-radio-group");
-const radioGroupProps = {
-  ...baseProps,
-  /** 会自动选中value对应的单选框 */
-  modelValue: [String, Number, Boolean],
-  /** 单选框形状，可选值为 dot / button / check，默认为 check */
-  shape: makeStringProp("check"),
-  /** 选中的颜色，默认为 #4D80F0 */
-  checkedColor: String,
-  /** 是否禁用，默认为 false */
-  disabled: makeBooleanProp(false),
-  /** 表单模式，默认为 false */
-  cell: makeBooleanProp(false),
-  /** 设置大小，默认为空 */
-  size: makeStringProp(""),
-  /** 同行展示，默认为 false */
-  inline: makeBooleanProp(false)
-};
-function useParent(key) {
-  const parent = inject(key, null);
-  if (parent) {
-    const instance = getCurrentInstance();
-    const { link, unlink, internalChildren } = parent;
-    link(instance);
-    onUnmounted(() => unlink(instance));
-    const index2 = computed(() => internalChildren.indexOf(instance));
-    return {
-      parent,
-      index: index2
-    };
-  }
-  return {
-    parent: null,
-    index: ref(-1)
-  };
-}
-const radioProps = {
-  ...baseProps,
-  /** 选中时的值 */
-  value: makeRequiredProp([String, Number, Boolean]),
-  /** 单选框的形状 */
-  shape: String,
-  /** 选中的颜色 */
-  checkedColor: String,
-  /** 禁用 */
-  disabled: {
-    type: [Boolean, null],
-    default: null
-  },
-  /** 单元格 */
-  cell: {
-    type: [Boolean, null],
-    default: null
-  },
-  /** 大小 */
-  size: String,
-  /** 内联 */
-  inline: {
-    type: [Boolean, null],
-    default: null
-  },
-  /** 最大宽度 */
-  maxWidth: String
-};
-function useCell() {
-  const { parent: cellGroup, index: index2 } = useParent(CELL_GROUP_KEY);
-  const border = computed(() => {
-    return cellGroup && cellGroup.props.border && index2.value;
-  });
-  return { border };
 }
 const zhCN = {
   calendar: {
@@ -7563,6 +7298,407 @@ const Locale = {
     deepAssign(messages, newMessages);
   }
 };
+function isVNode(value) {
+  return value ? value.__v_isVNode === true : false;
+}
+function flattenVNodes(children) {
+  const result = [];
+  const traverse2 = (children2) => {
+    if (Array.isArray(children2)) {
+      children2.forEach((child) => {
+        var _a2;
+        if (isVNode(child)) {
+          result.push(child);
+          if ((_a2 = child.component) == null ? void 0 : _a2.subTree) {
+            result.push(child.component.subTree);
+            traverse2(child.component.subTree.children);
+          }
+          if (child.children) {
+            traverse2(child.children);
+          }
+        }
+      });
+    }
+  };
+  traverse2(children);
+  return result;
+}
+const findVNodeIndex = (vnodes, vnode) => {
+  const index2 = vnodes.indexOf(vnode);
+  if (index2 === -1) {
+    return vnodes.findIndex((item) => vnode.key !== void 0 && vnode.key !== null && item.type === vnode.type && item.key === vnode.key);
+  }
+  return index2;
+};
+function sortChildren(parent, publicChildren, internalChildren) {
+  const vnodes = parent && parent.subTree && parent.subTree.children ? flattenVNodes(parent.subTree.children) : [];
+  internalChildren.sort((a, b) => findVNodeIndex(vnodes, a.vnode) - findVNodeIndex(vnodes, b.vnode));
+  const orderedPublicChildren = internalChildren.map((item) => item.proxy);
+  publicChildren.sort((a, b) => {
+    const indexA = orderedPublicChildren.indexOf(a);
+    const indexB = orderedPublicChildren.indexOf(b);
+    return indexA - indexB;
+  });
+}
+function useChildren(key) {
+  const publicChildren = reactive([]);
+  const internalChildren = reactive([]);
+  const parent = getCurrentInstance();
+  const linkChildren = (value) => {
+    const link = (child) => {
+      if (child.proxy) {
+        internalChildren.push(child);
+        publicChildren.push(child.proxy);
+        sortChildren(parent, publicChildren, internalChildren);
+      }
+    };
+    const unlink = (child) => {
+      const index2 = internalChildren.indexOf(child);
+      publicChildren.splice(index2, 1);
+      internalChildren.splice(index2, 1);
+    };
+    provide(
+      key,
+      Object.assign(
+        {
+          link,
+          unlink,
+          children: publicChildren,
+          internalChildren
+        },
+        value
+      )
+    );
+  };
+  return {
+    children: publicChildren,
+    linkChildren
+  };
+}
+const numericProp = [Number, String];
+const makeRequiredProp = (type) => ({
+  type,
+  required: true
+});
+const makeArrayProp = () => ({
+  type: Array,
+  default: () => []
+});
+const makeBooleanProp = (defaultVal) => ({
+  type: Boolean,
+  default: defaultVal
+});
+const makeNumberProp = (defaultVal) => ({
+  type: Number,
+  default: defaultVal
+});
+const makeNumericProp = (defaultVal) => ({
+  type: numericProp,
+  default: defaultVal
+});
+const makeStringProp = (defaultVal) => ({
+  type: String,
+  default: defaultVal
+});
+const baseProps = {
+  /**
+   * 自定义根节点样式
+   */
+  customStyle: makeStringProp(""),
+  /**
+   * 自定义根节点样式类
+   */
+  customClass: makeStringProp("")
+};
+const TABBAR_KEY = Symbol("wd-tabbar");
+const tabbarProps = {
+  ...baseProps,
+  /**
+   * 选中标签的索引值或者名称
+   */
+  modelValue: makeNumericProp(0),
+  /**
+   * 是否固定在底部
+   */
+  fixed: makeBooleanProp(false),
+  /**
+   * 是否显示顶部边框
+   */
+  bordered: makeBooleanProp(true),
+  /**
+   * 是否设置底部安全距禿（iPhone X 类型的机型）
+   */
+  safeAreaInsetBottom: makeBooleanProp(false),
+  /**
+   * 标签栏的形状。可选项：default/round
+   */
+  shape: makeStringProp("default"),
+  /**
+   * 激活标签的颜色
+   */
+  activeColor: String,
+  /**
+   * 未激活标签的颜色
+   */
+  inactiveColor: String,
+  /**
+   * 固定在底部时，是否在标签位置生成一个等高的占位元素
+   */
+  placeholder: makeBooleanProp(false),
+  /**
+   * 自定义组件的层级
+   */
+  zIndex: makeNumberProp(99)
+};
+function useParent(key) {
+  const parent = inject(key, null);
+  if (parent) {
+    const instance = getCurrentInstance();
+    const { link, unlink, internalChildren } = parent;
+    link(instance);
+    onUnmounted(() => unlink(instance));
+    const index2 = computed(() => internalChildren.indexOf(instance));
+    return {
+      parent,
+      index: index2
+    };
+  }
+  return {
+    parent: null,
+    index: ref(-1)
+  };
+}
+const tabbarItemProps = {
+  ...baseProps,
+  /**
+   * 标签页的标题
+   */
+  title: String,
+  /**
+   * 唯一标识符
+   */
+  name: numericProp,
+  /**
+   * 图标
+   */
+  icon: String,
+  /**
+   * 徽标显示值
+   */
+  value: {
+    type: [Number, String, null],
+    default: null
+  },
+  /**
+   * 是否点状徽标
+   */
+  isDot: Boolean,
+  /**
+   * 徽标最大值
+   */
+  max: makeNumberProp(99),
+  /**
+   * 徽标属性，透传给 Badge 组件
+   */
+  badgeProps: Object
+};
+const _b64chars = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"];
+const _mkUriSafe = (src) => src.replace(/[+/]/g, (m0) => m0 === "+" ? "-" : "_").replace(/=+\$/m, "");
+const fromUint8Array = (src, rfc4648 = false) => {
+  let b642 = "";
+  for (let i = 0, l = src.length; i < l; i += 3) {
+    const [a0, a1, a2] = [src[i], src[i + 1], src[i + 2]];
+    const ord = a0 << 16 | a1 << 8 | a2;
+    b642 += _b64chars[ord >>> 18];
+    b642 += _b64chars[ord >>> 12 & 63];
+    b642 += typeof a1 !== "undefined" ? _b64chars[ord >>> 6 & 63] : "=";
+    b642 += typeof a2 !== "undefined" ? _b64chars[ord & 63] : "=";
+  }
+  return rfc4648 ? _mkUriSafe(b642) : b642;
+};
+const _btoa = typeof btoa === "function" ? (s2) => btoa(s2) : (s2) => {
+  if (s2.charCodeAt(0) > 255) {
+    throw new RangeError("The string contains invalid characters.");
+  }
+  return fromUint8Array(Uint8Array.from(s2, (c) => c.charCodeAt(0)));
+};
+const utob = (src) => unescape(encodeURIComponent(src));
+function encode(src, rfc4648 = false) {
+  const b642 = _btoa(utob(src));
+  return rfc4648 ? _mkUriSafe(b642) : b642;
+}
+const buttonProps = {
+  ...baseProps,
+  /**
+   * 幽灵按钮
+   */
+  plain: makeBooleanProp(false),
+  /**
+   * 圆角按钮
+   */
+  round: makeBooleanProp(true),
+  /**
+   * 禁用按钮
+   */
+  disabled: makeBooleanProp(false),
+  /**
+   * 是否细边框
+   */
+  hairline: makeBooleanProp(false),
+  /**
+   * 块状按钮
+   */
+  block: makeBooleanProp(false),
+  /**
+   * 按钮类型，可选值：primary / success / info / warning / error / text / icon
+   */
+  type: makeStringProp("primary"),
+  /**
+   * 按钮尺寸，可选值：small / medium / large
+   */
+  size: makeStringProp("medium"),
+  /**
+   * 图标类名
+   */
+  icon: String,
+  /**
+   * 加载中按钮
+   */
+  loading: makeBooleanProp(false),
+  /**
+   * 加载图标颜色
+   */
+  loadingColor: String,
+  /**
+   * 开放能力
+   */
+  openType: String,
+  formType: String,
+  /**
+   * 指定是否阻止本节点的祖先节点出现点击态
+   */
+  hoverStopPropagation: Boolean,
+  /**
+   * 指定返回用户信息的语言，zh_CN 简体中文，zh_TW 繁体中文，en 英文
+   */
+  lang: String,
+  /**
+   * 会话来源，open-type="contact"时有效
+   */
+  sessionFrom: String,
+  /**
+   * 会话内消息卡片标题，open-type="contact"时有效
+   */
+  sendMessageTitle: String,
+  /**
+   * 会话内消息卡片点击跳转小程序路径，open-type="contact"时有效
+   */
+  sendMessagePath: String,
+  /**
+   * 会话内消息卡片图片，open-type="contact"时有效
+   */
+  sendMessageImg: String,
+  /**
+   * 打开 APP 时，向 APP 传递的参数，open-type=launchApp时有效
+   */
+  appParameter: String,
+  /**
+   * 是否显示会话内消息卡片，设置此参数为 true，用户进入客服会话会在右下角显示"可能要发送的小程序"提示，用户点击后可以快速发送小程序消息，open-type="contact"时有效
+   */
+  showMessageCard: Boolean
+};
+const FORM_KEY = Symbol("wd-form");
+const formProps = {
+  ...baseProps,
+  /**
+   * 表单数据对象
+   */
+  model: makeRequiredProp(Object),
+  /**
+   * 表单验证规则
+   */
+  rules: {
+    type: Object,
+    default: () => ({})
+  },
+  /**
+   * 是否在输入时重置表单校验信息
+   */
+  resetOnChange: makeBooleanProp(true)
+};
+const CELL_GROUP_KEY = Symbol("wd-cell-group");
+const cellGroupProps = {
+  ...baseProps,
+  /**
+   * 分组标题
+   */
+  title: String,
+  /**
+   * 分组右侧内容
+   */
+  value: String,
+  /**
+   * 分组启用插槽
+   */
+  useSlot: makeBooleanProp(false),
+  /**
+   * 是否展示边框线
+   */
+  border: makeBooleanProp(false)
+};
+const RADIO_GROUP_KEY = Symbol("wd-radio-group");
+const radioGroupProps = {
+  ...baseProps,
+  /** 会自动选中value对应的单选框 */
+  modelValue: [String, Number, Boolean],
+  /** 单选框形状，可选值为 dot / button / check，默认为 check */
+  shape: makeStringProp("check"),
+  /** 选中的颜色，默认为 #4D80F0 */
+  checkedColor: String,
+  /** 是否禁用，默认为 false */
+  disabled: makeBooleanProp(false),
+  /** 表单模式，默认为 false */
+  cell: makeBooleanProp(false),
+  /** 设置大小，默认为空 */
+  size: makeStringProp(""),
+  /** 同行展示，默认为 false */
+  inline: makeBooleanProp(false)
+};
+const radioProps = {
+  ...baseProps,
+  /** 选中时的值 */
+  value: makeRequiredProp([String, Number, Boolean]),
+  /** 单选框的形状 */
+  shape: String,
+  /** 选中的颜色 */
+  checkedColor: String,
+  /** 禁用 */
+  disabled: {
+    type: [Boolean, null],
+    default: null
+  },
+  /** 单元格 */
+  cell: {
+    type: [Boolean, null],
+    default: null
+  },
+  /** 大小 */
+  size: String,
+  /** 内联 */
+  inline: {
+    type: [Boolean, null],
+    default: null
+  },
+  /** 最大宽度 */
+  maxWidth: String
+};
+function useCell() {
+  const { parent: cellGroup, index: index2 } = useParent(CELL_GROUP_KEY);
+  const border = computed(() => {
+    return cellGroup && cellGroup.props.border && index2.value;
+  });
+  return { border };
+}
 const useTranslate = (name) => {
   const prefix = name ? camelCase(name) + "." : "";
   const translate = (key, ...args) => {
@@ -7723,161 +7859,6 @@ const inputProps = {
    */
   rules: makeArrayProp()
 };
-const toastDefaultOptionKey = "__TOAST_OPTION__";
-const defaultOptions = {
-  msg: "",
-  duration: 2e3,
-  loadingType: "outline",
-  loadingColor: "#4D80F0",
-  iconColor: "#4D80F0",
-  iconSize: 42,
-  loadingSize: 42,
-  customIcon: false,
-  position: "middle",
-  show: false,
-  zIndex: 100
-};
-function useToast(selector = "") {
-  let timer = null;
-  const toastOption = ref(defaultOptions);
-  const toastOptionKey = selector ? toastDefaultOptionKey + selector : toastDefaultOptionKey;
-  provide(toastOptionKey, toastOption);
-  const createMethod = (toastOptions) => {
-    return (options) => {
-      return show(deepMerge(toastOptions, typeof options === "string" ? { msg: options } : options));
-    };
-  };
-  const show = (option) => {
-    const options = deepMerge(defaultOptions, typeof option === "string" ? { msg: option } : option);
-    toastOption.value = deepMerge(options, {
-      show: true
-    });
-    timer && clearTimeout(timer);
-    if (toastOption.value.duration && toastOption.value.duration > 0) {
-      timer = setTimeout(() => {
-        timer && clearTimeout(timer);
-        close();
-      }, options.duration);
-    }
-  };
-  const loading = createMethod({
-    iconName: "loading",
-    duration: 0,
-    cover: true
-  });
-  const success = createMethod({
-    iconName: "success",
-    duration: 1500
-  });
-  const error = createMethod({ iconName: "error" });
-  const warning = createMethod({ iconName: "warning" });
-  const info = createMethod({ iconName: "info" });
-  const close = () => {
-    toastOption.value = { show: false };
-  };
-  return {
-    show,
-    loading,
-    success,
-    error,
-    warning,
-    info,
-    close
-  };
-}
-const TABBAR_KEY = Symbol("wd-tabbar");
-const tabbarProps = {
-  ...baseProps,
-  /**
-   * 选中标签的索引值或者名称
-   */
-  modelValue: makeNumericProp(0),
-  /**
-   * 是否固定在底部
-   */
-  fixed: makeBooleanProp(false),
-  /**
-   * 是否显示顶部边框
-   */
-  bordered: makeBooleanProp(true),
-  /**
-   * 是否设置底部安全距禿（iPhone X 类型的机型）
-   */
-  safeAreaInsetBottom: makeBooleanProp(false),
-  /**
-   * 标签栏的形状。可选项：default/round
-   */
-  shape: makeStringProp("default"),
-  /**
-   * 激活标签的颜色
-   */
-  activeColor: String,
-  /**
-   * 未激活标签的颜色
-   */
-  inactiveColor: String,
-  /**
-   * 固定在底部时，是否在标签位置生成一个等高的占位元素
-   */
-  placeholder: makeBooleanProp(false),
-  /**
-   * 自定义组件的层级
-   */
-  zIndex: makeNumberProp(99)
-};
-const tabbarItemProps = {
-  ...baseProps,
-  /**
-   * 标签页的标题
-   */
-  title: String,
-  /**
-   * 唯一标识符
-   */
-  name: numericProp,
-  /**
-   * 图标
-   */
-  icon: String,
-  /**
-   * 徽标显示值
-   */
-  value: {
-    type: [Number, String, null],
-    default: null
-  },
-  /**
-   * 是否点状徽标
-   */
-  isDot: Boolean,
-  /**
-   * 徽标最大值
-   */
-  max: makeNumberProp(99),
-  /**
-   * 徽标属性，透传给 Badge 组件
-   */
-  badgeProps: Object
-};
-const iconProps = {
-  ...baseProps,
-  /**
-   * 使用的图标名字，可以使用链接图片
-   */
-  name: makeRequiredProp(String),
-  /**
-   * 图标的颜色
-   */
-  color: String,
-  /**
-   * 图标的字体大小
-   */
-  size: String,
-  /**
-   * 类名前缀，用于使用自定义图标
-   */
-  classPrefix: makeStringProp("wd-icon")
-};
 const swiperProps = {
   ...baseProps,
   /**
@@ -8002,6 +7983,89 @@ const swiperProps = {
    * 类型：string
    */
   customNextImageClass: makeStringProp("")
+};
+const cellProps = {
+  ...baseProps,
+  /**
+   * 标题
+   */
+  title: String,
+  /**
+   * 右侧内容
+   */
+  value: String,
+  /**
+   * 图标类名
+   */
+  icon: String,
+  /**
+   * 描述信息
+   */
+  label: String,
+  /**
+   * 是否为跳转链接
+   */
+  isLink: makeBooleanProp(false),
+  /**
+   * 跳转地址
+   */
+  to: String,
+  /**
+   * 跳转时是否替换栈顶页面
+   */
+  replace: makeBooleanProp(false),
+  /**
+   * 开启点击反馈，is-link 默认开启
+   */
+  clickable: makeBooleanProp(false),
+  /**
+   * 设置单元格大小，可选值：large
+   */
+  size: String,
+  /**
+   * 是否展示边框线
+   */
+  border: Boolean,
+  /**
+   * 设置左侧标题宽度
+   */
+  titleWidth: String,
+  /**
+   * 是否垂直居中，默认顶部居中
+   */
+  center: makeBooleanProp(false),
+  /**
+   * 是否必填
+   */
+  required: makeBooleanProp(false),
+  /**
+   * 表单属性，上下结构
+   */
+  vertical: makeBooleanProp(false),
+  /**
+   * 表单域 model 字段名，在使用表单校验功能的情况下，该属性是必填的
+   */
+  prop: String,
+  /**
+   * 表单验证规则，结合wd-form组件使用
+   */
+  rules: makeArrayProp(),
+  /**
+   * icon 使用 slot 时的自定义样式
+   */
+  customIconClass: makeStringProp(""),
+  /**
+   * label 使用 slot 时的自定义样式
+   */
+  customLabelClass: makeStringProp(""),
+  /**
+   * value 使用 slot 时的自定义样式
+   */
+  customValueClass: makeStringProp(""),
+  /**
+   * title 使用 slot 时的自定义样式
+   */
+  customTitleClass: makeStringProp("")
 };
 const actionSheetProps = {
   ...baseProps,
@@ -8291,6 +8355,25 @@ const badgeProps = {
    */
   right: Number
 };
+const iconProps = {
+  ...baseProps,
+  /**
+   * 使用的图标名字，可以使用链接图片
+   */
+  name: makeRequiredProp(String),
+  /**
+   * 图标的颜色
+   */
+  color: String,
+  /**
+   * 图标的字体大小
+   */
+  size: String,
+  /**
+   * 类名前缀，用于使用自定义图标
+   */
+  classPrefix: makeStringProp("wd-icon")
+};
 const swiperNavprops = {
   ...baseProps,
   /**
@@ -8392,6 +8475,29 @@ const loadingProps = {
    */
   size: makeNumericProp("32px")
 };
+const cardProps = {
+  ...baseProps,
+  /**
+   * 卡片类型
+   */
+  type: String,
+  /**
+   * 卡片标题
+   */
+  title: String,
+  /**
+   * 标题自定义样式
+   */
+  customTitleClass: makeStringProp(""),
+  /**
+   * 内容自定义样式
+   */
+  customContentClass: makeStringProp(""),
+  /**
+   * 底部自定义样式
+   */
+  customFooterClass: makeStringProp("")
+};
 const overlayProps = {
   ...baseProps,
   /**
@@ -8486,7 +8592,9 @@ exports.actionSheetProps = actionSheetProps;
 exports.addUnit = addUnit;
 exports.badgeProps = badgeProps;
 exports.buttonProps = buttonProps;
+exports.cardProps = cardProps;
 exports.cellGroupProps = cellGroupProps;
+exports.cellProps = cellProps;
 exports.checkboxProps = checkboxProps;
 exports.computed = computed;
 exports.context = context;

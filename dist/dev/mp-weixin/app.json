@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/before-login/index",
-    "pages/after-login/index"
+    "pages/after-login/index",
+    "pages/before-login/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",
