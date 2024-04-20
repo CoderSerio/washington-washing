@@ -7141,6 +7141,49 @@ function deepAssign(target, source) {
   });
   return target;
 }
+function debounce(func, wait, options = {}) {
+  let timeoutId = null;
+  let lastArgs;
+  let lastThis;
+  let result;
+  const leading = isDef(options.leading) ? options.leading : false;
+  const trailing = isDef(options.trailing) ? options.trailing : true;
+  function invokeFunc() {
+    if (lastArgs !== void 0) {
+      result = func.apply(lastThis, lastArgs);
+      lastArgs = void 0;
+    }
+  }
+  function startTimer() {
+    timeoutId = setTimeout(() => {
+      timeoutId = null;
+      if (trailing) {
+        invokeFunc();
+      }
+    }, wait);
+  }
+  function cancelTimer() {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  }
+  function debounced(...args) {
+    lastArgs = args;
+    lastThis = this;
+    if (timeoutId === null) {
+      if (leading) {
+        invokeFunc();
+      }
+      startTimer();
+    } else if (trailing) {
+      cancelTimer();
+      startTimer();
+    }
+    return result;
+  }
+  return debounced;
+}
 const getPropByPath = (obj, path) => {
   const keys = path.split(".");
   try {
@@ -7857,6 +7900,133 @@ const swiperProps = {
    */
   customNextImageClass: makeStringProp("")
 };
+const GRID_KEY = Symbol("wd-grid");
+const gridProps = {
+  ...baseProps,
+  /**
+   * 是否开启格子点击反馈
+   */
+  clickable: makeBooleanProp(false),
+  /**
+   * 是否将格子固定为正方形
+   */
+  square: makeBooleanProp(false),
+  /**
+   * 列数
+   */
+  column: Number,
+  /**
+   * 是否显示边框
+   */
+  border: makeBooleanProp(false),
+  /**
+   * 背景颜色
+   */
+  bgColor: makeStringProp(""),
+  /**
+   * 格子之间的间距，默认单位为px
+   */
+  gutter: Number
+};
+const gridItemProps = {
+  ...baseProps,
+  /**
+   * GridItem 下方文字样式
+   */
+  customText: makeStringProp(""),
+  /**
+   * GridItem 上方 icon 样式
+   */
+  customIcon: makeStringProp(""),
+  /**
+   * 图标名称，可选值见 wd-icon 组件
+   */
+  icon: makeStringProp(""),
+  /**
+   * 图标大小
+   */
+  iconSize: makeStringProp("26px"),
+  /**
+   * 文字
+   */
+  text: String,
+  /**
+   * 点击后跳转的链接地址
+   */
+  url: String,
+  /**
+   * 页面跳转方式, 参考微信小程序路由文档，可选值：navigateTo / switchTab / reLaunch
+   */
+  linkType: makeStringProp("navigateTo"),
+  /**
+   * 是否开启 GridItem 内容插槽
+   */
+  useSlot: makeBooleanProp(false),
+  /**
+   * 是否开启 GridItem icon 插槽
+   */
+  useIconSlot: makeBooleanProp(false),
+  /**
+   * 是否开启 GridItem text 内容插槽
+   */
+  useTextSlot: makeBooleanProp(false),
+  /**
+   * 是否显示图标右上角小红点
+   */
+  isDot: Boolean,
+  /**
+   * 图标右上角显示的 badge 类型，可选值：primary / success / warning / danger / info
+   */
+  type: String,
+  /**
+   * 图标右上角 badge 显示值
+   */
+  value: Number,
+  /**
+   * 图标右上角 badge 最大值，超过最大值会显示 '{max}+'，要求 value 是 Number 类型
+   */
+  max: Number,
+  /**
+   * 徽标属性，透传给 Badge 组件
+   */
+  badgeProps: Object
+};
+const imgProps = {
+  ...baseProps,
+  customImage: makeStringProp(""),
+  /**
+   * 图片链接
+   */
+  src: String,
+  /**
+   * 是否显示为圆形
+   */
+  round: makeBooleanProp(false),
+  /**
+   * 填充模式：'top left' / 'top right' / 'bottom left' / 'bottom right' / 'right' / 'left' / 'center' / 'bottom' / 'top' / 'heightFix' / 'widthFix' / 'aspectFill' / 'aspectFit' / 'scaleToFill'
+   */
+  mode: makeStringProp("scaleToFill"),
+  /**
+   * 是否懒加载
+   */
+  lazyLoad: makeBooleanProp(false),
+  /**
+   * 宽度，默认单位为px
+   */
+  width: numericProp,
+  /**
+   * 高度，默认单位为px
+   */
+  height: numericProp,
+  /**
+   * 圆角大小，默认单位为px
+   */
+  radius: numericProp,
+  /**
+   * 是否允许预览
+   */
+  enablePreview: makeBooleanProp(false)
+};
 const badgeProps = {
   ...baseProps,
   /**
@@ -7927,6 +8097,7 @@ const swiperNavprops = {
 };
 exports.CELL_GROUP_KEY = CELL_GROUP_KEY;
 exports.FORM_KEY = FORM_KEY;
+exports.GRID_KEY = GRID_KEY;
 exports.RADIO_GROUP_KEY = RADIO_GROUP_KEY;
 exports.TABBAR_KEY = TABBAR_KEY;
 exports._export_sfc = _export_sfc;
@@ -7936,6 +8107,7 @@ exports.buttonProps = buttonProps;
 exports.cellGroupProps = cellGroupProps;
 exports.computed = computed;
 exports.createSSRApp = createSSRApp;
+exports.debounce = debounce;
 exports.deepClone = deepClone;
 exports.defineComponent = defineComponent;
 exports.e = e;
@@ -7945,7 +8117,11 @@ exports.formProps = formProps;
 exports.getCurrentInstance = getCurrentInstance;
 exports.getPropByPath = getPropByPath;
 exports.getRect = getRect;
+exports.gridItemProps = gridItemProps;
+exports.gridProps = gridProps;
 exports.iconProps = iconProps;
+exports.imgProps = imgProps;
+exports.index = index;
 exports.inputProps = inputProps;
 exports.isDef = isDef;
 exports.isObj = isObj;
