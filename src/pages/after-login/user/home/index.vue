@@ -9,13 +9,21 @@
 
   <view class="buttons">
     <view class="main-buttons">
-      <wd-button :round="false" block>开始洗衣</wd-button>
+      <wd-button :round="false" @click="props.routeTo('order-publish')" block>
+        开始洗衣
+      </wd-button>
     </view>
 
     <view class="sub-buttons">
       <view class="left">
-        <wd-button :round="false" type="error" plain>次要按钮</wd-button>
-        <wd-button :round="false" type="error" plain>次要按钮</wd-button>
+        <wd-button :round="false" type="error" plain> 活动公告 </wd-button>
+        <wd-button
+          :round="false"
+          type="error"
+          @click="props.routeTo('profile')"
+          plain
+          >个人设置</wd-button
+        >
       </view>
 
       <view class="right">
@@ -73,12 +81,12 @@ export default {
 
   .main-buttons {
     :deep(.wd-button) {
-      height: 80px;
+      height: 120px;
     }
   }
 
   .sub-buttons {
-    height: 250px;
+    height: 350px;
     display: flex;
     flex: 1;
     gap: 12px;
@@ -92,9 +100,10 @@ export default {
       flex-direction: column;
       gap: 12px;
       height: 100%;
+      height: 200px;
       :deep(.wd-button) {
         width: 100%;
-        height: 60px;
+        flex: 1;
       }
     }
 

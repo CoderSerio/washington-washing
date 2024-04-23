@@ -2,17 +2,23 @@
   <div class="main">
     <div class="profile-contain">
       <div class="profile">
-        <wd-img :width="80" :height="80" round mode="aspectFill"
-          src="https://i0.hdslb.com/bfs/face/bea223e23f7577e71fb0978cb2ecf1141ab2a3ef.jpg@240w_240h_1c_1s_!web-avatar-nav.avif" />
+        <wd-img
+          :width="80"
+          :height="80"
+          round
+          mode="aspectFill"
+          src="https://i0.hdslb.com/bfs/face/bea223e23f7577e71fb0978cb2ecf1141ab2a3ef.jpg@240w_240h_1c_1s_!web-avatar-nav.avif"
+        />
         <div class="info">
-          <div>我是朴国昌</div>
-          <div>18227801689</div>
+          <div>你好</div>
+          <div>1871111111</div>
         </div>
       </div>
     </div>
     <wd-grid clickable square>
       <wd-grid-item icon="list" icon-size="30px" text="订单管理" />
       <wd-grid-item icon="star" icon-size="30px" text="评价管理" />
+      <wd-grid-item icon="star" icon-size="30px" text="注销登录" />
     </wd-grid>
   </div>
 </template>
@@ -43,4 +49,5 @@
   flex-direction: column;
   gap: 20px;
 }
-</style>>
+</style>
+>

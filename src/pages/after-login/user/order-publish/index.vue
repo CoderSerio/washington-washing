@@ -1,4 +1,5 @@
 <template>
+  <view class="title"> 发布订单 </view>
   <wd-form ref="form" :model="model">
     <wd-cell-group border>
       <wd-input
@@ -6,14 +7,25 @@
         label-width="100px"
         prop="name"
         clearable
-        v-model="model.name"
-        placeholder="请输入用户名"
+        v-model="model.washId"
+        placeholder="请输入ID"
         :rules="[{ required: true, message: '请填写用户名' }]"
       />
+
+      <wd-input
+        label="地点"
+        label-width="100px"
+        prop="name"
+        clearable
+        v-model="model.location"
+        placeholder="请输入地点"
+        :rules="[{ required: true, message: '请填写地点' }]"
+      />
+
       <wd-input
         v-for="(item, index) in model.phoneNumbers"
         :key="item.key"
-        :label="'联系方式' + index"
+        label="联系方式"
         :prop="'phoneNumbers.' + index + '.value'"
         label-width="100px"
         clearable
@@ -22,22 +34,37 @@
         :rules="[{ required: true, message: '请填写联系方式' + index }]"
       />
 
-      <wd-cell title-width="0px">
-        <view class="footer">
-          <wd-button size="small" type="info" plain @click="addPhone"
-            >添加</wd-button
-          >
-          <wd-button size="small" type="info" plain @click="removePhone"
-            >删除</wd-button
-          >
-          <wd-button size="small" type="info" plain @click="reset"
-            >重置</wd-button
-          >
-          <wd-button type="primary" size="small" @click="submit"
-            >提交</wd-button
-          >
-        </view>
-      </wd-cell>
+      <wd-input
+        label="西装数量"
+        label-width="100px"
+        clearable
+        v-model="model.suitNumber"
+      />
+
+      <wd-input
+        label="皮衣数量"
+        label-width="100px"
+        clearable
+        v-model="model.leatherNumber"
+      />
+
+      <wd-input
+        label="棉衣数量"
+        label-width="100px"
+        clearable
+        v-model="model.cottonNumber"
+      />
+
+      <wd-input
+        label="化纤数量"
+        label-width="100px"
+        clearable
+        v-model="model.syntheticNumber"
+      />
+
+      <view class="footer">
+        <wd-button type="primary" @click="submit"> 提交 </wd-button>
+      </view>
     </wd-cell-group>
   </wd-form>
 </template>
@@ -45,39 +72,33 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
 
-interface PhoneItem {
-  key: number;
-  value: string;
-}
+const CLOTHE_TYPE = ["西装", "皮衣", "棉衣", "化纤"];
 
 const model = reactive<{
-  name: string;
-  phoneNumbers: PhoneItem[];
+  washId: string;
+  location: string;
+  phoneNumber: string;
+  suitNumber: number;
+  leatherNumber: number;
+  cottonNumber: number;
+  syntheticNumber: number;
 }>({
-  name: "",
-  phoneNumbers: [
-    {
-      key: Date.now(),
-      value: "",
-    },
-  ],
+  washId: "",
+  location: "",
+  phoneNumber: "",
+  suitNumber: 0,
+  leatherNumber: 0,
+  cottonNumber: 0,
+  syntheticNumber: 0,
 });
 
 const form = ref();
-
-const removePhone = () => {
-  model.phoneNumbers.splice(model.phoneNumbers.length - 1, 1);
-};
 
 const addPhone = () => {
   model.phoneNumbers.push({
     key: Date.now(),
     value: "",
   });
-};
-
-const reset = () => {
-  form.value.reset();
 };
 
 const submit = () => {
@@ -89,13 +110,35 @@ const submit = () => {
 };
 </script>
 
+<script lang="ts">
+export default {
+  options: {
+    styleIsolation: "shared",
+  },
+};
+</script>
+
 <style scoped lang="scss">
+.title {
+  font-size: 24px;
+  text-align: center;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.add-button {
+}
+
 .footer {
-  text-align: left;
+  width: 100%;
+  text-align: center;
+  height: 160px;
   :deep(.wd-button) {
-    &:not(:last-child) {
-      margin-right: 12px;
-    }
+    margin-top: 60px;
+    width: 80%;
+    height: 100%;
+    margin-right: 12px;
+    border-radius: 8px !important;
   }
 }
 </style>
