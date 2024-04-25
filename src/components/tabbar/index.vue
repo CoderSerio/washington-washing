@@ -7,22 +7,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted, toRefs } from "vue";
 
 const CLOTHE_TYPE = ["西装", "皮衣", "棉衣", "化纤"];
 
 const tabbar = ref(1);
-const { routeTo, dataList = [] } = defineProps<{
+const props = defineProps<{
   dataList: Array<
     Record<string, any> & { title: string; icon: string; route: string }
   >;
   routeTo: (name: string) => void;
   routeName: string;
 }>();
+const { dataList, routeName, routeTo } = toRefs(props);
 
 const handleChange = (data: any) => {
-  routeTo(dataList[data.value].route);
+  console.log("dataList");
+  console.log(dataList, data.value);
+  routeTo.value(dataList.value[data.value].route);
 };
+onMounted(() => {});
 </script>
 
 <style scoped></style>

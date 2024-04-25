@@ -27,14 +27,19 @@ const routeTo = (name: string) => {
   routeName.value = name;
   console.log("routeName.value", routeName.value);
 };
-const dataList = [
-  { title: "首页", icon: "home", route: "home" },
-  { title: "发布订单", icon: "add-circle", route: "order-publish" },
-  { title: "我的", icon: "user", route: "profile" },
-];
+const dataList = ref<Array<any>>([]);
 
 onMounted(() => {
   level.value = 1;
+  if (level.value === 1) {
+    dataList.value = [
+      { title: "首页", icon: "home", route: "home" },
+      { title: "发布订单", icon: "add-circle", route: "order-publish" },
+      { title: "我的", icon: "user", route: "profile" },
+    ];
+  } else {
+    dataList.value = [{ title: "我的", icon: "user", route: "profile" }];
+  }
 });
 </script>
 
