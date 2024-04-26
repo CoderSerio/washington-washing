@@ -8,8 +8,6 @@
       <accountLogin :changeStep="changeStep"></accountLogin>
     </template>
 
-    <template v-else-if="step === 'weixin-login'"> </template>
-
     <template v-else-if="step === 'register'">
       <register :changeStep="changeStep"></register>
     </template>
@@ -61,6 +59,7 @@ export default {
     align-items: center;
     font-size: 32px;
   }
+
   .buttons {
     width: 100%;
     flex: 3;
