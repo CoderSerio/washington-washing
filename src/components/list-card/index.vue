@@ -53,13 +53,6 @@ const ORDER_STATUS = {
   30: "处理中",
   40: "已完成",
 };
-// const data = {
-//   clotheCount: [1, 0, 0, 0],
-//   location: "旧日都城大道一段114514号",
-//   time: "2024-04-20",
-//   status: 10,
-//   comment: "",
-// };
 
 const { info } = defineProps<{
   info: {
