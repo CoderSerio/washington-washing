@@ -4,17 +4,42 @@
     <view class="form">
       <wd-form ref="form" :model="model">
         <wd-cell-group border>
-          <wd-input label="用户名" label-width="100px" prop="value1" clearable v-model="model.value1" placeholder="请输入用户名"
-            :rules="[{ required: true, message: '请填写用户名' }]" />
-          <wd-input label="密码" label-width="100px" prop="value2" show-password clearable v-model="model.value2"
-            placeholder="请输入密码" :rules="[{ required: true, message: '请填写密码' }]" />
+          <wd-input
+            label="用户名"
+            label-width="100px"
+            prop="value1"
+            clearable
+            v-model="model.value1"
+            placeholder="请输入用户名"
+            :rules="[{ required: true, message: '请填写用户名' }]"
+          />
+          <wd-input
+            label="密码"
+            label-width="100px"
+            prop="value2"
+            show-password
+            clearable
+            v-model="model.value2"
+            placeholder="请输入密码"
+            :rules="[{ required: true, message: '请填写密码' }]"
+          />
         </wd-cell-group>
 
         <view class="footer">
-          <wd-button custom-class="submit-button" type="primary" block @click="handleSubmit">
+          <wd-button
+            custom-class="submit-button"
+            type="primary"
+            block
+            @click="handleSubmit"
+          >
             登录
           </wd-button>
-          <wd-button custom-class="back-button" type="info" block @click="props.changeStep('init')">
+          <wd-button
+            custom-class="back-button"
+            type="info"
+            block
+            @click="props.changeStep('init')"
+          >
             返回
           </wd-button>
         </view>
@@ -26,10 +51,10 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import { request } from '@/components/request/request'
-import { useToast } from 'wot-design-uni'
+import { request } from "@/components/request/request";
+import { useToast } from "wot-design-uni";
 
-const toast = useToast()
+const toast = useToast();
 const props = defineProps<{
   changeStep: (step: string) => void;
 }>();
@@ -45,41 +70,46 @@ const model = reactive<{
 const form = ref();
 
 function handleSubmit() {
-  toast.loading('加载中...')
+  toast.loading("加载中...");
 
   form.value
     .validate()
     .then(({ valid, errors }: any) => {
       if (valid) {
         console.log("ok", model);
-        request('/user/getUser', 'GET', {}).then((res: any) => {
+        request("/user/getUser", "GET", {}).then((res: any) => {
           console.log("获取用户成功");
           const userInfo: any[] = [];
           for (let i of res.data) {
-            userInfo.push({ ...JSON.parse(i.washInfo), type: i.type, ...JSON.parse(i.wxInfo), userId: i.userId })
+            userInfo.push({
+              ...JSON.parse(i.washInfo),
+              type: i.type,
+              ...JSON.parse(i.wxInfo),
+              userId: i.userId,
+            });
           }
           let isHave = false;
           for (let i of userInfo) {
             if (i.value1 === model.value1 && i.value2 === model.value2) {
-              toast.success('登录成功')
+              toast.success("登录成功");
+
               uni.setStorage({
                 key: "userInfo",
                 data: i,
                 success: function () {
                   console.log(i);
-                }
+                },
               });
               setTimeout(() => {
-                uni.redirectTo({ url: '../after-login/index' })
-              }, 1000)
+                uni.redirectTo({ url: "../after-login/index" });
+              }, 1000);
               isHave = true;
             }
           }
           if (!isHave) {
-            toast.error('登录失败 请检查账号和密码')
+            toast.error("登录失败 请检查账号和密码");
           }
-        })
-
+        });
       }
     })
     .catch((error: Error) => {

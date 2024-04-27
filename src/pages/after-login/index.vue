@@ -19,18 +19,27 @@ import user from "./user/index.vue";
 import business from "./business/index.vue";
 import { onMounted, ref } from "vue";
 import tabbar from "../../components/tabbar/index.vue";
+import { request } from "@/components/request/request";
 
 // 1用户、2商家
-const level = ref(1);
+const level = ref();
 const routeName = ref<string>("home"); // 确保这里的引用与组件名一致（大小写敏感）
 const routeTo = (name: string) => {
   routeName.value = name;
-  console.log("routeName.value", routeName.value);
 };
 const dataList = ref<Array<any>>([]);
+const allOrderList = ref<Array<any>>([]);
 
 onMounted(() => {
-  level.value = 1;
+  uni.getStorage({
+    key: "userInfo",
+    success: function (res) {
+      console.log("res", res.data.value3);
+      level.value = res.data.value3 || 1;
+    },
+  });
+
+  console.log(level.value);
   if (level.value === 1) {
     dataList.value = [
       { title: "首页", icon: "home", route: "home" },
@@ -38,8 +47,14 @@ onMounted(() => {
       { title: "我的", icon: "user", route: "profile" },
     ];
   } else {
-    dataList.value = [{ title: "我的", icon: "user", route: "profile" }];
+    dataList.value = [
+      { title: "订单池", icon: "home", route: "order-list" },
+      { title: "我的", icon: "user", route: "profile" },
+    ];
   }
+
+  routeTo(dataList.value[0].route);
+  console.log("routeName", routeName.value);
 });
 </script>
 

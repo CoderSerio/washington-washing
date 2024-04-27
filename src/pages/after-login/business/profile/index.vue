@@ -18,7 +18,12 @@
     <wd-grid clickable square>
       <wd-grid-item icon="list" icon-size="30px" text="订单管理" />
       <wd-grid-item icon="star" icon-size="30px" text="评价管理" />
-      <wd-grid-item icon="star" icon-size="30px" text="注销登录" />
+      <wd-grid-item
+        icon="star"
+        icon-size="30px"
+        text="注销登录22"
+        @click="logout"
+      />
     </wd-grid>
   </div>
 </template>
@@ -27,6 +32,10 @@
 import { ref } from "vue";
 const name = ref<string>("我是朴国仓");
 const phone = ref<number>(18227801789);
+
+const logout = () => {
+  uni.redirectTo({ url: "../../../before-login/index" });
+};
 </script>
 <style scoped>
 .profile-contain {

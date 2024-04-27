@@ -1,9 +1,15 @@
 <template>
   <div>
-    <wd-button size="small" @click="showActions">确定支付</wd-button>
-    <wd-action-sheet v-model="show" title="支付" @close="close">
+    <!-- <wd-button size="small" @click="showActions">确定支付</wd-button> -->
+    <wd-action-sheet
+      v-model="props.show"
+      title="支付"
+      @close="props.setShow(false)"
+    >
       <view class="contain">
-        <div class="paymethod"><span>支付方式：</span><wd-checkbox v-model="show" size="large">微信支付</wd-checkbox>
+        <div class="paymethod">
+          <span>支付方式：</span>
+          <wd-checkbox v-model="show" size="large"> 微信支付 </wd-checkbox>
         </div>
         <div class="price">{{ price }}￥</div>
         <wd-button type="success" @click="handleClick">确认支付</wd-button>
@@ -13,25 +19,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits } from 'vue'
-import { useToast } from 'wot-design-uni'
-const show = ref<boolean>(false)
-const price = ref<number>(20)
-const toast = useToast()
-const emit = defineEmits(['handlePayment'])
-function showActions() {
-  show.value = true
-  toast.show(`支付`)
-}
+import { ref, defineEmits } from "vue";
+import { useToast } from "wot-design-uni";
+const show = ref<boolean>(false);
+const price = ref<number>(20);
+const toast = useToast();
+const emit = defineEmits(["handlePayment"]);
 
-function close() {
-  show.value = false
-}
+const props = defineProps<{
+  show: boolean;
+  setShow: (flag: boolean) => void;
+}>();
+
+// function showActions() {
+//   show.value = true;
+//   toast.show(`支付`);
+// }
+
+// function close() {
+//   show.value = false;
+// }
+
 function handleClick() {
-  emit('handlePayment')
-  close()
+  emit("handlePayment");
+  show.value = false;
 }
-
 </script>
 <style scoped>
 .contain {
