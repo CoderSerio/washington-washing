@@ -57,9 +57,6 @@
           <view class="footer">
             <view class="total-price">总计: 1160元</view>
             <view class="buttons">
-              <!-- <view class="status-test">
-                {{ info.orderInfo }}
-              </view> -->
               <!-- 接单：status 待接单 && 商家-->
               <template v-if="info.orderInfo.status === 10 && props.type === 2">
                 <wd-button
@@ -189,7 +186,6 @@ function handleComment() {
   console.log(999, data);
   request("/order/setOrderInfo", "POST", data).then((res) => {
     toast.success("评论成功");
-    console.log("评论成功", res);
     show.value = false;
   });
 }

@@ -9,9 +9,9 @@
   <template v-else-if="routeName === 'order-list'">
     <orderList :routeTo="routeTo"></orderList>
   </template>
-  <template v-else-if="routeName === 'order-payment'">
+  <!-- <template v-else-if="routeName === 'order-payment'">
     <payment></payment>
-  </template>
+  </template> -->
   <template v-else-if="routeName === 'profile'">
     <profile></profile>
   </template>
@@ -25,14 +25,23 @@
 import home from "./home/index.vue"; // 注意：通常组件名首字母大写
 import orderPublish from "./order-publish/index.vue";
 import orderList from "./order-list/index.vue";
-import payment from "./payment/index.vue";
-import profile from "./profile/index.vue";
+import profile from "../../../components/profile/index.vue";
 import notFound from "../../../components/404/index.vue";
-import { toRefs } from "vue";
+import { onMounted, ref, toRefs } from "vue";
 
 const props = defineProps<{
   routeName: string;
   routeTo: (name: string) => void;
 }>();
 const { routeName, routeTo } = toRefs(props);
+const userInfo = ref<any>(null);
+
+onMounted(() => {
+  uni.getStorage({
+    key: "userInfo",
+    success: function (res) {
+      userInfo.value = res.data;
+    },
+  });
+});
 </script>

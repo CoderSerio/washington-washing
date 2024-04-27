@@ -14,11 +14,15 @@
         </div>
       </div>
     </div>
-    <wd-grid clickable square>
-      <wd-grid-item icon="list" icon-size="30px" text="订单管理" />
-      <wd-grid-item icon="star" icon-size="30px" text="评价管理" />
-      <wd-grid-item icon="star" icon-size="30px" text="注销登录11" />
-    </wd-grid>
+
+    <view class="list">
+      <template vv-if="props.type === 2">
+        <wd-button custom-class="list-item" @click="configureService">
+          服务设置
+        </wd-button>
+      </template>
+      <wd-button custom-class="list-item" @click="logout">注销登录</wd-button>
+    </view>
   </div>
 </template>
 
@@ -31,29 +35,38 @@ const phone = ref<number>(182278019);
 const imgUrl = ref<string>(
   "https://i0.hdslb.com/bfs/face/bea223e23f7577e71fb0978cb2ecf1141ab2a3ef.jpg@240w_240h_1c_1s_!web-avatar-nav.avif"
 );
-
 const toast = useToast();
+
+const configureService = () => {};
 
 const logout = () => {
   toast.success("注销成功");
   uni.clearStorage();
   setTimeout(() => {
-    uni.redirectTo({ url: "../../../before-login/index" });
-    console.log("123");
+    uni.redirectTo({ url: "../../pages/before-login/index" });
   }, 1200);
 };
 onMounted(() => {
   uni.getStorage({
     key: "userInfo",
     success: function (res) {
-      console.log(res.data);
+      console.log("res", res.data);
       name.value = res.data.value1;
       imgUrl.value = res.data.avater;
     },
   });
 });
 </script>
-<style scoped>
+
+<script lang="ts">
+export default {
+  options: {
+    styleIsolation: "shared",
+  },
+};
+</script>
+
+<style lang="scss" scoped>
 .profile-contain {
   display: flex;
   align-items: flex-end;
@@ -78,6 +91,22 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.list {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+
+  :deep(.list-item) {
+    width: 80%;
+    height: 32px;
+    border-radius: 4px;
+  }
 }
 </style>
 >

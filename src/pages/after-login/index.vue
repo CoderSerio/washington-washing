@@ -46,6 +46,7 @@ onMounted(() => {
         dataList.value = [
           { title: "订单池", icon: "home", route: "order-list" },
           { title: "我的", icon: "user", route: "profile" },
+          { title: "服务设置", icon: "config", route: "config-info" },
         ];
       }
       console.log(dataList.value);

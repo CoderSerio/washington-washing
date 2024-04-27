@@ -70,8 +70,6 @@ const model = reactive<{
 const form = ref();
 
 function handleSubmit() {
-  toast.loading("加载中...");
-
   form.value
     .validate()
     .then(({ valid, errors }: any) => {
@@ -86,6 +84,8 @@ function handleSubmit() {
               type: i.type,
               ...JSON.parse(i.wxInfo),
               userId: i.userId,
+              washInfo: i.washInfo,
+              wxInfo: i.wxInfo,
             });
           }
           let isHave = false;

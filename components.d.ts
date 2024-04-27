@@ -12,6 +12,7 @@ declare module '@vue/runtime-core' {
     404: typeof import('./src/components/404/index.vue')['default']
     List: typeof import('./src/components/list/index.vue')['default']
     ListCard: typeof import('./src/components/list-card/index.vue')['default']
+    Profile: typeof import('./src/components/profile/index.vue')['default']
     Tabbar: typeof import('./src/components/tabbar/index.vue')['default']
     WdActionSheet: typeof import('wot-design-uni/components/wd-action-sheet/wd-action-sheet.vue')['default']
     WdBadge: typeof import('wot-design-uni/components/wd-badge/wd-badge.vue')['default']

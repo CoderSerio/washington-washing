@@ -8,6 +8,10 @@
       <profile></profile>
     </template>
 
+    <template v-else-if="routeName === 'config-info'">
+      <configInfo :routeTo="routeTo"></configInfo>
+    </template>
+
     <template v-else>
       <notFound :routeTo="routeTo"></notFound>
     </template>
@@ -16,16 +20,26 @@
 
 <script setup lang="ts">
 import orderList from "./order-list/index.vue";
-import profile from "./profile/index.vue";
+import profile from "../../../components/profile/index.vue";
 import notFound from "../../../components/404/index.vue";
-import { onMounted } from "vue";
+import configInfo from "./config-info/index.vue";
+import { onMounted, ref } from "vue";
 
 const { routeName, routeTo } = defineProps<{
   routeName: string;
   routeTo: (name: string) => void;
 }>();
 
-onMounted(() => {});
+const userInfo = ref<any>(null);
+
+onMounted(() => {
+  uni.getStorage({
+    key: "userInfo",
+    success: function (res) {
+      userInfo.value = res.data;
+    },
+  });
+});
 </script>
 
 <style scoped>
