@@ -26,7 +26,7 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import request from '@/components/request/request'
+import { request } from '@/components/request/request'
 import { useToast } from 'wot-design-uni'
 
 const toast = useToast()
@@ -46,6 +46,7 @@ const form = ref();
 
 function handleSubmit() {
   toast.loading('加载中...')
+
   form.value
     .validate()
     .then(({ valid, errors }: any) => {
@@ -55,12 +56,22 @@ function handleSubmit() {
           console.log("获取用户成功");
           const userInfo: any[] = [];
           for (let i of res.data) {
-            userInfo.push({ ...JSON.parse(i.washInfo), type: i.type })
+            userInfo.push({ ...JSON.parse(i.washInfo), type: i.type, ...JSON.parse(i.wxInfo), userId: i.userId })
           }
           let isHave = false;
           for (let i of userInfo) {
             if (i.value1 === model.value1 && i.value2 === model.value2) {
               toast.success('登录成功')
+              uni.setStorage({
+                key: "userInfo",
+                data: i,
+                success: function () {
+                  console.log(i);
+                }
+              });
+              setTimeout(() => {
+                uni.redirectTo({ url: '../after-login/index' })
+              }, 1000)
               isHave = true;
             }
           }

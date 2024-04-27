@@ -13,10 +13,7 @@
         <view class="goods-list">
           <template v-for="(cnt, index) in info.clotheCount" :key="index">
             <template v-if="cnt > 0">
-              <view
-                class="goods-item"
-                style="color: rgba(0, 0, 0, 0.85); font-size: 16px"
-              >
+              <view class="goods-item" style="color: rgba(0, 0, 0, 0.85); font-size: 16px">
                 <view class="goods-info">
                   <view class="goods-name">{{ CLOTHE_TYPE[index] }}</view>
                   <view class="goods-count"> (x{{ cnt }}) </view>
@@ -33,19 +30,35 @@
         <view class="footer">
           <view class="total-price">总计: 1160元</view>
           <view class="buttons">
-            <wd-button size="small" style="margin-right: 8px">评价</wd-button>
-            <wd-button size="small" plain>立即支付</wd-button>
+
+            <wd-button size="small" style="margin-right: 8px" type="info" @click="show = true">评价</wd-button>
+            <payment @handlePayment="handlePayment" />
+            <!-- <wd-button size="small" plain @click="handlepayment">立即支付</wd-button> -->
           </view>
+          <wd-overlay :show="show">
+            <div class="comment">
+              <wd-input type="text" v-model="comment" placeholder="请输入评价内容" />
+              <wd-button size="small" @click="handleComment">确认评价</wd-button>
+            </div>
+          </wd-overlay>
         </view>
       </template>
     </wd-card>
   </view>
+
+  <wd-toast />
 </template>
 
 <script setup lang="ts">
 // TODO：要请求商家报价列表
-import { ref } from "vue";
+import { reactive, ref, toRefs } from "vue";
+import { request } from '../../components/request/request'
+import { useToast } from 'wot-design-uni'
+import payment from "@/pages/after-login/user/payment/index.vue";
+const toast = useToast()
 const CLOTHE_TYPE = ["西装", "皮衣", "棉衣", "化纤"];
+const show = ref(false);
+const comment = ref("")
 const ORDER_STATUS = {
   0: "全部",
   10: "待接单",
@@ -54,7 +67,7 @@ const ORDER_STATUS = {
   40: "已完成",
 };
 
-const { info } = defineProps<{
+const props = defineProps<{
   info: {
     clotheCount: Array<number>;
     location: string;
@@ -62,7 +75,41 @@ const { info } = defineProps<{
     status: number;
     comment: string;
   };
+  idInfo: {
+    orderId: number;
+    userId: number;
+    businessId: number;
+  }
 }>();
+const { info, idInfo } = toRefs(props);
+console.log('订单信息', info, idInfo);
+function handlePayment() {
+  const data = {
+    "businessId": idInfo.value.businessId,
+    "orderId": idInfo.value.orderId,
+    "orderInfo": JSON.stringify({ ...info.value, status: 30 }),
+    "userId": idInfo.value.userId
+  }
+  console.log(999, data, JSON.stringify({ ...info.value, status: 30 }))
+  request("/order/setOrderInfo", "POST", data).then((res) => {
+    toast.success('支付成功')
+    console.log('支付成功', res)
+  })
+}
+function handleComment() {
+  const data = {
+    "businessId": idInfo.value.businessId,
+    "orderId": idInfo.value.orderId,
+    "orderInfo": JSON.stringify({ ...info.value, comment: comment.value }),
+    "userId": idInfo.value.userId
+  }
+  console.log(999, data)
+  request("/order/setOrderInfo", "POST", data).then((res) => {
+    toast.success('评论成功')
+    console.log('评论成功', res)
+    show.value = false
+  })
+}
 </script>
 
 <script lang="ts">
@@ -102,6 +149,7 @@ export default {
     overflow-wrap: break-word;
     white-space: normal;
   }
+
   .goods-list {
     width: 100%;
     display: flex;
@@ -132,10 +180,28 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   .total-price {
     font-size: 16px;
     font-weight: 800;
     color: #ff3700;
   }
+}
+
+.comment {
+  position: fix;
+  margin-top: 50%;
+  display: flex;
+  gap: 30px;
+  padding: 10px;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
 }
 </style>

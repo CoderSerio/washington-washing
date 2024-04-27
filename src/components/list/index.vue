@@ -11,9 +11,9 @@
     </view>
 
     <view class="list-wrapper">
-      <template v-for="(item, index) in data" :key="item.location + item.time">
+      <template v-for="(item, index) in listData.value" :key="index">
         <template v-if="+filterValue === 0 || +item.status === +filterValue">
-          <listCard :info="item"></listCard>
+          <listCard :info="item" :idInfo="idInfo.value"></listCard>
         </template>
       </template>
     </view>
@@ -60,6 +60,36 @@ const filterValue = ref(0);
 </script>
 
 <script lang="ts">
+import { request } from '@/components/request/request'
+import { reactive } from 'vue'
+const listData = reactive<any>({
+  value: []
+})
+const idInfo = reactive<any>({
+  value: {}
+})
+let userId: any = null
+uni.getStorage({
+  key: 'userInfo',
+  success: function (res) {
+    userId = res.data.userId;
+  }
+})
+setInterval(() => {
+  let temp: any = []
+  request('/order/getOrder', 'GET', {}).then((res: any) => {
+    res.data.filter((item: any) => {
+      return item.userId === userId
+    }).forEach((item: any) => {
+      temp.push({ ...JSON.parse(item.orderInfo) })
+      idInfo.value = { userId: item.userId, orderId: item.orderId, businessId: item.businessId }
+    })
+    listData.value = temp
+  })
+  console.log('订单', listData.value);
+}, 5000)
+
+
 export default {
   options: {
     styleIsolation: "shared",
@@ -78,6 +108,7 @@ export default {
   align-items: center;
   justify-content: flex-start;
   padding-bottom: 80px;
+
   .filter-wrapper {
     margin: 10px 8px;
   }

@@ -12,15 +12,20 @@
       </wd-button>
     </view>
   </view>
+  <wd-toast />
 </template>
 
 <script setup lang="ts">
 import { onLoad } from "@dcloudio/uni-app";
 import { ref } from "vue";
-import request from '@/components/request/request'
+import { request, getUsers } from '@/components/request/request'
+import { useToast } from 'wot-design-uni'
+
+const toast = useToast()
 
 const props = defineProps<{
   changeStep: (step: string) => void;
+  saveOpenid: (id: string) => void;
 }>();
 
 onLoad(() => {
@@ -38,8 +43,30 @@ function weixinLogin() {
       const data = {
         "code": code
       }
-      request('/user/bind', 'POST', data).then((res) => {
+      request('/user/bind', 'POST', data).then((resolve: any) => {
+        const res = JSON.parse(resolve.data)
         console.log(res)
+        getUsers().then((users: any) => {
+          const userInfo: any[] = [];
+          for (let i of users.data) {
+            userInfo.push({ ...JSON.parse(i.wxInfo), type: i.type })
+          }
+          let isHave = false;
+          for (let i of userInfo) {
+            if (i.openid === res.openid) {
+              toast.success('登录成功')
+              setTimeout(() => {
+                uni.redirectTo({ url: '../after-login/index' })
+              }, 1000)
+              isHave = true;
+            }
+          }
+          if (!isHave) {
+            toast.error('登录失败 请先去注册')
+            props.saveOpenid(res.openid)
+            props.changeStep('register');
+          }
+        })
       })
     },
     fail: function (err) {

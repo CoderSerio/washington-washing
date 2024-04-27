@@ -1,7 +1,7 @@
 <template>
   <view class="page-wrapper">
     <template v-if="step === 'init'">
-      <init :changeStep="changeStep"></init>
+      <init :changeStep="changeStep" :saveOpenid='saveOpenid'></init>
     </template>
 
     <template v-else-if="step === 'account-login'">
@@ -9,7 +9,7 @@
     </template>
 
     <template v-else-if="step === 'register'">
-      <register :changeStep="changeStep"></register>
+      <register :changeStep="changeStep" :openid="openid"></register>
     </template>
   </view>
 </template>
@@ -27,12 +27,16 @@ onLoad(() => {
 
 type Step = "init" | "account-login" | "weixin-login" | "register" | "binding";
 const step = ref<Step>("init");
+const openid = ref<string>("0");
 const checkItems = ref({
   isWeixinBinding: false,
   isWashAccountBinding: false,
 });
 const changeStep = (name: string) => {
   step.value = name as Step;
+};
+const saveOpenid = (id: string) => {
+  openid.value = id;
 };
 </script>
 

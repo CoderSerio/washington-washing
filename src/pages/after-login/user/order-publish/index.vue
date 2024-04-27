@@ -22,14 +22,21 @@
       </view>
     </wd-cell-group>
   </wd-form>
+  <wd-toast />
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
+import { request } from '@/components/request/request'
+import { useToast } from 'wot-design-uni'
 
+const toast = useToast()
 const CLOTHE_TYPE = ["西装", "皮衣", "棉衣", "化纤"];
-
+const props = defineProps<{
+  routeTo: (name: string) => void
+}>()
 const model = reactive<{
+  clotheCount: Array<number>;
   washId: string;
   location: string;
   phoneNumber: number;
@@ -37,40 +44,52 @@ const model = reactive<{
   leatherNumber: number;
   cottonNumber: number;
   syntheticNumber: number;
+  status: number;
+  comment: string;
 }>({
   washId: "",
+  clotheCount: [],
   location: "",
   phoneNumber: 0,
   suitNumber: 0,
   leatherNumber: 0,
   cottonNumber: 0,
   syntheticNumber: 0,
+  status: 10,
+  comment: ''
 });
 
 const form = ref();
 
 
 const submit = () => {
+  toast.loading('加载中...')
   form.value.validate().then(({ valid, errors }: any) => {
     if (valid) {
       // 通过
-      console.log(model)
+      model.clotheCount[0] = Number(model.suitNumber);
+      model.clotheCount[1] = Number(model.leatherNumber);
+      model.clotheCount[2] = Number(model.cottonNumber);
+      model.clotheCount[3] = Number(model.syntheticNumber);
       const orderData = JSON.stringify(model)
-      uni.request({
-        url: 'https://42.202.37.75:17255/order/createOrder', //仅为示例，并非真实接口地址。
-        data: {
-          "userId": 6,
-          "businessId": 0,
-          "orderInfo": orderData
-        },
-        header: {
-          'custom-header': 'hello' //自定义请求头信息
-        },
-        method: 'POST',
-        success: (res) => {
+      uni.getStorage({
+        key: 'userInfo',
+        success: function (res) {
           console.log(res.data);
+          const data = {
+            "userId": res.data.userId,
+            "businessId": 0,
+            "orderInfo": orderData
+          }
+          request('/order/createOrder', 'POST', data).then((res) => {
+            toast.success("添加成功")
+            setTimeout(() => {
+              props.routeTo('home')
+            }, 1000)
+          })
         }
-      });
+      })
+
     }
   });
 };

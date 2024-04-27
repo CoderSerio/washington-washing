@@ -16,11 +16,12 @@
               <wd-radio :value="2">商家</wd-radio>
             </wd-radio-group>
           </view>
+          <button open-type="chooseAvatar" @chooseavatar="handleAvater"> 微信头像获取 </button>
         </wd-cell-group>
 
         <view class="footer">
           <wd-button custom-class="submit-button" type="primary" block @click="handleSubmit">
-            注册
+            绑定微信并注册
           </wd-button>
           <wd-button custom-class="back-button" type="info" block @click="props.changeStep('init')">
             返回
@@ -33,15 +34,22 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from "vue";
-import request from '@/components/request/request'
+import { onMounted, reactive, ref } from "vue";
+import { request } from '@/components/request/request'
 import { useToast } from 'wot-design-uni'
 
 const toast = useToast()
 const props = defineProps<{
+  openid: string
   changeStep: (step: string) => void;
 }>();
-
+const wxInfo = reactive<{
+  avater: string,
+  openid: string
+}>({
+  avater: "",
+  openid: ""
+});
 const model = reactive<{
   value1: string;
   value2: string;
@@ -56,30 +64,63 @@ const form = ref();
 
 function handleSubmit() {
   toast.loading('加载中...')
-  form.value
-    .validate()
-    .then(({ valid, errors }: any) => {
-      if (valid) {
-        console.log("ok");
-        const Data = JSON.stringify(model);
+  if (props.openid)
+    form.value
+      .validate()
+      .then(({ valid, errors }: any) => {
+        if (valid) {
+          console.log("ok");
+          const Data = JSON.stringify(model);
+
+          const data = {
+            "wxInfo": JSON.stringify(wxInfo),
+            "type": model.value3,
+            "washInfo": Data
+          };
+          request('/user/createUser', 'POST', data).then((res) => {
+            toast.success('注册成功!正在跳转……')
+            console.log('注册成功', res)
+            setTimeout(() => {
+              props.changeStep('account-login')
+            }, 1000)
+          })
+        }
+      })
+      .catch((error: Error) => {
+        console.log(error, "error");
+      });
+}
+function handleAvater(res: any) {
+  wxInfo.avater = res.detail.avatarUrl;
+}
+onMounted(() => {
+  console.log(props.openid);
+  if (props.openid != "0") {
+    wxInfo.openid = props.openid;
+    toast.info('注册账户后即可微信登录~')
+  } else {
+    uni.login({
+      "provider": "weixin",
+      "onlyAuthorize": true, // 微信登录仅请求授权认证
+      success: function (event) {
+        const { code } = event
+        //客户端成功获取授权临时票据（code）,向业务服务器发起登录请求。
         const data = {
-          "wxInfo": "{}",
-          "type": model.value3,
-          "washInfo": Data
-        };
-        request('/user/createUser', 'POST', data).then((res) => {
-          toast.success('注册成功!正在跳转……')
-          console.log('注册成功', res)
-          setTimeout(() => {
-            props.changeStep('account-login')
-          }, 1000)
+          "code": code
+        }
+        request('/user/bind', 'POST', data).then((resolve: any) => {
+          const res = JSON.parse(resolve.data)
+          console.log(res.openid)
+          wxInfo.openid = res.openid;
         })
+      },
+      fail: function (err) {
+        // 登录授权失败
+        // err.code是错误码
       }
     })
-    .catch((error: Error) => {
-      console.log(error, "error");
-    });
-}
+  }
+})
 </script>
 
 <script lang="ts">

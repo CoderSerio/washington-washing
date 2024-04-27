@@ -1,25 +1,24 @@
 <template>
   <div>
-    <wd-button @click="showActions">确定支付</wd-button>
+    <wd-button size="small" @click="showActions">确定支付</wd-button>
     <wd-action-sheet v-model="show" title="支付" @close="close">
       <view class="contain">
-        <div class="paymethod"><span>支付方式：</span><wd-checkbox v-model="show" size="large"
-            @change="handleChange">微信支付</wd-checkbox>
+        <div class="paymethod"><span>支付方式：</span><wd-checkbox v-model="show" size="large">微信支付</wd-checkbox>
         </div>
         <div class="price">{{ price }}￥</div>
-        <wd-button type="success">确认支付</wd-button>
+        <wd-button type="success" @click="handleClick">确认支付</wd-button>
       </view>
     </wd-action-sheet>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, defineEmits } from 'vue'
 import { useToast } from 'wot-design-uni'
 const show = ref<boolean>(false)
 const price = ref<number>(20)
 const toast = useToast()
-
+const emit = defineEmits(['handlePayment'])
 function showActions() {
   show.value = true
   toast.show(`支付`)
@@ -27,6 +26,10 @@ function showActions() {
 
 function close() {
   show.value = false
+}
+function handleClick() {
+  emit('handlePayment')
+  close()
 }
 
 </script>

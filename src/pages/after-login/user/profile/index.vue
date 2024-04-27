@@ -2,16 +2,9 @@
   <div class="main">
     <div class="profile-contain">
       <div class="profile">
-        <wd-img
-          :width="80"
-          :height="80"
-          round
-          mode="aspectFill"
-          src="https://i0.hdslb.com/bfs/face/bea223e23f7577e71fb0978cb2ecf1141ab2a3ef.jpg@240w_240h_1c_1s_!web-avatar-nav.avif"
-        />
+        <wd-img :width="80" :height="80" round mode="aspectFill" :src="imgUrl" />
         <div class="info">
           <div>{{ name }}</div>
-          <div>{{ phone }}</div>
         </div>
       </div>
     </div>
@@ -20,15 +13,22 @@
       <wd-grid-item icon="star" icon-size="30px" text="评价管理" />
       <wd-grid-item icon="star" icon-size="30px" text="注销登录" />
     </wd-grid>
-    <payment />
   </div>
 </template>
 
 <script setup lang="ts">
-import payment from "../payment/index.vue";
 import { ref } from "vue";
 const name = ref<string>("我是朴国仓");
 const phone = ref<number>(18227801789);
+const imgUrl = ref<string>("https://i0.hdslb.com/bfs/face/bea223e23f7577e71fb0978cb2ecf1141ab2a3ef.jpg@240w_240h_1c_1s_!web-avatar-nav.avif");
+uni.getStorage({
+  key: 'userInfo',
+  success: function (res) {
+    console.log(res.data);
+    name.value = res.data.value1
+    imgUrl.value = res.data.avater
+  }
+})
 </script>
 <style scoped>
 .profile-contain {

@@ -1,28 +1,13 @@
 {
   "pages": [
-    "pages/after-login/index",
-    "pages/before-login/index"
+    "pages/before-login/index",
+    "pages/after-login/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "uni-app",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8"
-  },
-  "tabBar": {
-    "color": "#7A7E83",
-    "selectedColor": "#3cc51f",
-    "borderStyle": "black",
-    "list": [
-      {
-        "pagePath": "pages/before-login/index",
-        "text": "登录页面"
-      },
-      {
-        "pagePath": "pages/after-login/index",
-        "text": "登录后的页面"
-      }
-    ]
   },
   "usingComponents": {}
 }

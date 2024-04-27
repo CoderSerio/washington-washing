@@ -4,7 +4,7 @@
     <home :routeTo="routeTo"></home>
   </template>
   <template v-else-if="routeName === 'order-publish'">
-    <orderPublish></orderPublish>
+    <orderPublish :routeTo="routeTo"></orderPublish>
   </template>
   <template v-else-if="routeName === 'order-list'">
     <orderList :routeTo="routeTo"></orderList>
@@ -28,9 +28,11 @@ import orderList from "./order-list/index.vue";
 import payment from "./payment/index.vue";
 import profile from "./profile/index.vue";
 import notFound from "../../../components/404/index.vue";
+import { toRefs } from "vue";
 
-const { routeName, routeTo } = defineProps<{
+const props = defineProps<{
   routeName: string;
   routeTo: (name: string) => void;
 }>();
+const { routeName, routeTo } = toRefs(props);
 </script>
