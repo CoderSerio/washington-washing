@@ -31,6 +31,5 @@ onMounted(() => {});
 <style scoped>
 .business-wrapper {
   height: 100%;
-  background-color: red;
 }
 </style>

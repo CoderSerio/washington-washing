@@ -11,8 +11,7 @@
     </view>
 
     <view class="list-wrapper">
-      <template v-for="(item, index) in props.listData" :key="index">
-        {{ item.status }}
+      <template v-for="(item, index) in props.allOrderData" :key="index">
         <template v-if="+filterValue === 0 || +item.status === +filterValue">
           <listCard :info="item" :idInfo="idInfo.value" :type="type"></listCard>
         </template>
@@ -23,7 +22,7 @@
 
 <script setup lang="ts">
 import listCard from "../list-card/index.vue";
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { request } from "@/components/request/request";
 
 const ORDER_STATUS = {
@@ -65,44 +64,33 @@ const mockData = [
 ];
 
 const props = defineProps<{
-  listData: Array<any>;
+  allOrderData: Array<any>;
 }>();
 
 const filterValue = ref(0);
+const listData = ref<Array<any>>([]);
 const idInfo = reactive<any>({
   value: {},
 });
 
 let userId: any = null;
-
 // 0 无效身份（请求中） 1 用户 2 商家
 const type = ref<0 | 1 | 2>(0);
 
-uni.getStorage({
-  key: "userInfo",
-  success: function (res) {
-    userId = res.data.userId;
-    type.value = res.data.value3;
-  },
-});
+onMounted(() => {
+  uni.getStorage({
+    key: "userInfo",
+    success: function (res) {
+      userId = res.data.userId;
+      type.value = res.data.value3;
 
-setInterval(() => {
-  let temp: any = [];
-  request("/order/getOrder", "GET", {}).then((res: any) => {
-    res.data
-      .filter((item: any) => {
-        return item.userId === userId;
-      })
-      .forEach((item: any) => {
-        temp.push({ ...JSON.parse(item.orderInfo) });
-        idInfo.value = {
-          userId: item.userId,
-          orderId: item.orderId,
-          businessId: item.businessId,
-        };
-      });
+      // listData.value = props.allOrderData.filter((item) => {
+      //   console.log('item')
+      //   return true
+      // })
+    },
   });
-}, 5000);
+});
 </script>
 
 <script lang="ts">

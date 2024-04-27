@@ -36,25 +36,23 @@ onMounted(() => {
     success: function (res) {
       console.log("res", res.data.value3);
       level.value = res.data.value3 || 1;
+      if (level.value === 1) {
+        dataList.value = [
+          { title: "首页", icon: "home", route: "home" },
+          { title: "发布订单", icon: "add-circle", route: "order-publish" },
+          { title: "我的", icon: "user", route: "profile" },
+        ];
+      } else {
+        dataList.value = [
+          { title: "订单池", icon: "home", route: "order-list" },
+          { title: "我的", icon: "user", route: "profile" },
+        ];
+      }
+      console.log(dataList.value);
+      routeTo(dataList.value[0].route);
+      console.log("routeName", routeName.value);
     },
   });
-
-  console.log(level.value);
-  if (level.value === 1) {
-    dataList.value = [
-      { title: "首页", icon: "home", route: "home" },
-      { title: "发布订单", icon: "add-circle", route: "order-publish" },
-      { title: "我的", icon: "user", route: "profile" },
-    ];
-  } else {
-    dataList.value = [
-      { title: "订单池", icon: "home", route: "order-list" },
-      { title: "我的", icon: "user", route: "profile" },
-    ];
-  }
-
-  routeTo(dataList.value[0].route);
-  console.log("routeName", routeName.value);
 });
 </script>
 

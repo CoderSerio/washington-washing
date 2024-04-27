@@ -1,6 +1,6 @@
 <!-- 只显示自己的订单状态 -->
 <template>
-  <list :list-data="allOrderData"></list>
+  <list :allOrderData="allOrderData"></list>
 </template>
 
 <script setup lang="ts">
