@@ -3,7 +3,7 @@
     <view class="filter-wrapper">
       <wd-radio-group v-model="filterValue" shape="button">
         <template v-for="(item, key) in ORDER_STATUS" :key="key">
-          <wd-radio :value="key" @click="filterValue = key">
+          <wd-radio :value="key" @click="handleRadioClick(key)">
             {{ item }}
           </wd-radio>
         </template>
@@ -12,7 +12,9 @@
 
     <view class="list-wrapper">
       <template v-for="(item, index) in props.allOrderData" :key="index">
-        <template v-if="+filterValue === 0 || +item.status === +filterValue">
+        <template
+          v-if="+filterValue === 0 || +item.orderInfo.status === +filterValue"
+        >
           <listCard :info="item" :idInfo="idInfo.value" :type="type"></listCard>
         </template>
       </template>
@@ -33,36 +35,6 @@ const ORDER_STATUS = {
   40: "已完成",
 };
 
-const mockData = [
-  {
-    businessId: "",
-    orderId: "",
-    userId: "",
-    clotheCount: [1, 0, 0, 0],
-    location: "旧日都城大道一段114514号",
-    status: 30,
-    comment: "",
-  },
-  {
-    businessId: "",
-    orderId: "",
-    userId: "",
-    clotheCount: [1, 0, 0, 0],
-    location: "旧日都城大道一段114514号",
-    status: 10,
-    comment: "",
-  },
-  {
-    businessId: "",
-    orderId: "",
-    userId: "",
-    clotheCount: [1, 0, 0, 0],
-    location: "旧日都城大道一段114514号",
-    status: 40,
-    comment: "好啊好啊好啊",
-  },
-];
-
 const props = defineProps<{
   allOrderData: Array<any>;
 }>();
@@ -76,6 +48,11 @@ const idInfo = reactive<any>({
 let userId: any = null;
 // 0 无效身份（请求中） 1 用户 2 商家
 const type = ref<0 | 1 | 2>(0);
+
+const handleRadioClick = (key: number) => {
+  console.log(key);
+  filterValue.value = key;
+};
 
 onMounted(() => {
   uni.getStorage({
