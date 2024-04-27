@@ -14,7 +14,10 @@
 
         <view class="content">
           <view class="goods-list">
-            <template v-for="(cnt, index) in info.clotheCount" :key="index">
+            <template
+              v-for="(cnt, index) in info.orderInfo.clotheCount"
+              :key="index"
+            >
               <template v-if="cnt > 0">
                 <view
                   class="goods-item"
@@ -29,7 +32,9 @@
               </template>
             </template>
           </view>
-          <view class="location">地址：{{ info.location }}</view>
+          <view class="location"
+            >地址：{{ info.orderInfo?.location ?? "" }}</view
+          >
         </view>
 
         <payment
@@ -99,7 +104,7 @@
               <template
                 v-else-if="info.orderInfo.status === 40 && props.type === 1"
               >
-                <template v-if="info.comment === ''">
+                <template v-if="info.orderInfo.comment === ''">
                   <wd-button
                     size="small"
                     style="margin-right: 8px"
@@ -111,7 +116,7 @@
                 </template>
                 <template v-else>
                   <view class="comment">
-                    {{ info.comment }}
+                    {{ info.orderInfo.comment }}
                   </view>
                 </template>
               </template>
@@ -152,6 +157,8 @@ const props = defineProps<{
   };
   type: 0 | 1 | 2;
 }>();
+
+console.log("props", props);
 const { info, idInfo } = toRefs(props);
 
 console.log("订单信息", info, idInfo);
@@ -167,7 +174,6 @@ function handlePayment() {
     orderInfo: JSON.stringify({ ...info.value, status: 30 }),
     userId: idInfo.value.userId,
   };
-  console.log(999, data, JSON.stringify({ ...info.value, status: 30 }));
   request("/order/setOrderInfo", "POST", data).then((res) => {
     toast.success("支付成功");
     console.log("支付成功", res);
