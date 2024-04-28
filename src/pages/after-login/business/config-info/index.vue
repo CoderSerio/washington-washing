@@ -50,13 +50,10 @@ const props = defineProps<{
 }>();
 const model = reactive<any>({
   price: [],
-  phoneNumber: 0,
-  suitNumber: 0,
-  leatherNumber: 0,
-  cottonNumber: 0,
-  syntheticNumber: 0,
-  status: 10,
-  comment: "",
+  suitNumber: 10,
+  leatherNumber: 10,
+  cottonNumber: 10,
+  syntheticNumber: 10,
 });
 
 const form = ref();

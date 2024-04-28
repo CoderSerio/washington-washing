@@ -21,8 +21,6 @@ declare module '@vue/runtime-core' {
     WdCellGroup: typeof import('wot-design-uni/components/wd-cell-group/wd-cell-group.vue')['default']
     WdCheckbox: typeof import('wot-design-uni/components/wd-checkbox/wd-checkbox.vue')['default']
     WdForm: typeof import('wot-design-uni/components/wd-form/wd-form.vue')['default']
-    WdGrid: typeof import('wot-design-uni/components/wd-grid/wd-grid.vue')['default']
-    WdGridItem: typeof import('wot-design-uni/components/wd-grid-item/wd-grid-item.vue')['default']
     WdIcon: typeof import('wot-design-uni/components/wd-icon/wd-icon.vue')['default']
     WdImg: typeof import('wot-design-uni/components/wd-img/wd-img.vue')['default']
     WdInput: typeof import('wot-design-uni/components/wd-input/wd-input.vue')['default']

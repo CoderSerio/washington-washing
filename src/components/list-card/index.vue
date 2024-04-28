@@ -1,6 +1,9 @@
 <template>
   <template>
     <view class="card-wrapper">
+      {{ userInfo }}
+      ——————————
+      {{ info }}
       <wd-card type="rectangle">
         <template #title>
           <view class="header">
@@ -27,7 +30,9 @@
                     <view class="goods-name">{{ CLOTHE_TYPE[index] }}</view>
                     <view class="goods-count"> (x{{ cnt }}) </view>
                   </view>
-                  <view class="goods-price">1000元</view>
+                  <view class="goods-price"
+                    >{{ info.orderInfo.price?.[index] ?? "--" }}元</view
+                  >
                 </view>
               </template>
             </template>
@@ -55,7 +60,9 @@
 
         <template #footer>
           <view class="footer">
-            <view class="total-price">总计: 1160元</view>
+            <view class="total-price">
+              总计:{{ info.orderInfo?.totalPrice ?? "--" }}元
+            </view>
             <view class="buttons">
               <!-- 接单：status 待接单 && 商家-->
               <template v-if="info.orderInfo.status === 10 && props.type === 2">
@@ -63,7 +70,7 @@
                   size="small"
                   style="margin-right: 8px"
                   type="info"
-                  @click="show = true"
+                  @click="deal"
                 >
                   接单
                 </wd-button>
@@ -91,7 +98,7 @@
                   size="small"
                   style="margin-right: 8px"
                   type="info"
-                  @click="showPayment = true"
+                  @click="confirmFinish"
                 >
                   确认完成
                 </wd-button>
@@ -128,7 +135,7 @@
 
 <script setup lang="ts">
 // TODO：要请求商家报价列表
-import { reactive, ref, toRefs } from "vue";
+import { onMounted, reactive, ref, toRefs } from "vue";
 import { request } from "../../components/request/request";
 import { useToast } from "wot-design-uni";
 import payment from "@/pages/after-login/user/payment/index.vue";
@@ -144,6 +151,7 @@ const ORDER_STATUS = {
   40: "已完成",
 };
 const showPayment = ref<boolean>(false);
+const userInfo = ref<any>(null);
 
 const props = defineProps<{
   info: any;
@@ -155,7 +163,6 @@ const props = defineProps<{
   type: 0 | 1 | 2;
 }>();
 
-console.log("props", props);
 const { info, idInfo } = toRefs(props);
 
 console.log("订单信息", info, idInfo);
@@ -178,10 +185,10 @@ function handlePayment() {
 }
 function handleComment() {
   const data = {
-    businessId: idInfo.value.businessId,
-    orderId: idInfo.value.orderId,
+    businessId: info.value.orderInfo.businessId,
+    orderId: info.value.orderInfo.orderId,
     orderInfo: JSON.stringify({ ...info.value, comment: comment.value }),
-    userId: idInfo.value.userId,
+    userId: info.value.orderInfo.userId,
   };
   console.log(999, data);
   request("/order/setOrderInfo", "POST", data).then((res) => {
@@ -189,6 +196,58 @@ function handleComment() {
     show.value = false;
   });
 }
+function confirmFinish() {
+  const data = {
+    businessId: info.value.orderInfo.businessId,
+    orderId: info.value.orderId,
+    orderInfo: JSON.stringify({ ...info.value, status: 40 }),
+    userId: info.value.orderInfo.userId,
+  };
+  request("/order/setOrderInfo", "POST", data).then((res) => {
+    toast.success("操作成功");
+  });
+}
+// 接单
+function deal() {
+  uni.getStorage({
+    key: "userInfo",
+    success: function (res) {
+      userInfo.value = res.data;
+      const price = userInfo.value?.price ?? [10, 10, 10, 10];
+      const computedPrice = price.map((p: number, index: number) => {
+        return p * (info.value?.orderInfo?.clotheCount[index] ?? 0);
+      });
+
+      const data = {
+        userId: info.value.orderInfo.userId,
+        businessId: userInfo.value?.userId,
+        orderId: info.value?.orderInfo?.orderId,
+        orderInfo: JSON.stringify({
+          ...info.value,
+          status: 20,
+          price: computedPrice,
+          totalPrice: computedPrice.reduce(
+            (sum: number, i: number) => (sum += i),
+            0
+          ),
+        }),
+      };
+      request("/order/setOrderInfo", "POST", data).then((res) => {
+        toast.success("操作成功");
+        console.log("res", res);
+      });
+    },
+  });
+}
+
+onMounted(() => {
+  uni.getStorage({
+    key: "userInfo",
+    success: function (res) {
+      userInfo.value = res.data;
+    },
+  });
+});
 </script>
 
 <script lang="ts">
