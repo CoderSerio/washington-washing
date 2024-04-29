@@ -77,6 +77,7 @@ const model = reactive<{
   syntheticNumber: number;
   status: number;
   comment: string;
+  date: string;
 }>({
   washId: "",
   clotheCount: [],
@@ -88,6 +89,7 @@ const model = reactive<{
   syntheticNumber: 0,
   status: 10,
   comment: "",
+  date: new Date().toLocaleString(),
 });
 
 const form = ref();

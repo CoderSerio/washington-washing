@@ -1,26 +1,21 @@
 <template>
   <template>
     <view class="card-wrapper">
-      <view>
-        userInfo:
-        {{ userInfo }}
-      </view>
-      ——————————
-      <view>
-        info:
-        {{ info }}
-      </view>
       <wd-card type="rectangle">
         <template #title>
           <view class="header">
-            <view class="time">2020-02-03</view>
+            <view class="time">{{ info?.orderInfo?.date ?? "" }}</view>
             <!-- TODO: 加个颜色 -->
-            <view class="status">{{
-              ORDER_STATUS[`${info?.orderInfo?.status}`] ?? "未知"
-            }}</view>
+            <view class="status">
+              {{
+                ORDER_STATUS[`${info?.status || info?.orderInfo?.status}`] ??
+                "未知"
+              }}
+            </view>
           </view>
         </template>
 
+        {{ info }}
         <view class="content">
           <view class="goods-list">
             <template
@@ -38,10 +33,14 @@
                   </view>
                   <view class="goods-price">
                     {{
-                      info.orderInfo?.clotheCount?.[index] ??
-                      0 * userInfo?.price?.[index] ??
-                      0 ??
-                      "--"
+                      info?.price?.[index] ??
+                      (props?.type == 2 ||
+                      (info?.status ?? info.orderInfo.status) > 10
+                        ? info.orderInfo?.clotheCount?.[index] ??
+                          0 * userInfo?.price?.[index] ??
+                          0 ??
+                          "--"
+                        : "--")
                     }}元
                   </view>
                 </view>
@@ -57,6 +56,7 @@
           @handlePayment="handlePayment"
           :show="showPayment"
           :setShow="setShowPayment"
+          :price="info.totalPrice"
         />
         <wd-overlay :show="show">
           <div class="comment">
@@ -73,21 +73,16 @@
           <view class="footer">
             <view class="total-price">
               总计:{{
-                info.orderInfo?.clotheCount?.[0] ??
-                0 * userInfo?.price?.[0] ??
-                0 + info.orderInfo?.clotheCount?.[1] ??
-                0 * userInfo?.price?.[1] ??
-                0 + info.orderInfo?.clotheCount?.[2] ??
-                0 * userInfo?.price?.[2] ??
-                0 + info.orderInfo?.clotheCount?.[3] ??
-                0 * userInfo.price?.[3] ??
-                0 ??
-                "--"
+                info?.totalPrice ??
+                (props?.type == 2 ||
+                (info?.status ?? info.orderInfo.status) > 10
+                  ? sum()
+                  : "--")
               }}元
             </view>
             <view class="buttons">
               <!-- 接单：status 待接单 && 商家-->
-              <template v-if="info.orderInfo.status === 10 && props.type === 2">
+              <template v-if="info.status === 10 && props.type === 2">
                 <wd-button
                   size="small"
                   style="margin-right: 8px"
@@ -99,9 +94,7 @@
               </template>
 
               <!-- 支付： status 待支付 && 用户 -->
-              <template
-                v-else-if="info.orderInfo.status === 20 && props.type === 1"
-              >
+              <template v-else-if="info.status === 20 && props.type === 1">
                 <wd-button
                   size="small"
                   style="margin-right: 8px"
@@ -113,9 +106,7 @@
               </template>
 
               <!-- 确认完成: status 处理中 && 商家 -->
-              <template
-                v-else-if="info.orderInfo.status === 30 && props.type === 2"
-              >
+              <template v-else-if="info.status === 30 && props.type === 2">
                 <wd-button
                   size="small"
                   style="margin-right: 8px"
@@ -127,10 +118,11 @@
               </template>
 
               <!-- 评价：status 已完成 && 用户 -->
-              <template
-                v-else-if="info.orderInfo.status === 40 && props.type === 1"
-              >
-                <template v-if="info.orderInfo.comment === ''">
+
+              <template v-else-if="info.status === 40">
+                <template
+                  v-if="info.orderInfo.comment === '' && props.type === 1"
+                >
                   <wd-button
                     size="small"
                     style="margin-right: 8px"
@@ -174,6 +166,25 @@ const ORDER_STATUS = {
 const showPayment = ref<boolean>(false);
 const userInfo = ref<any>(null);
 
+const safe = (num: number) => {
+  return num ?? 0;
+};
+
+const sum = () => {
+  const count = info.value?.orderInfo?.clotheCount;
+  const price = userInfo.value?.price;
+
+  let sum = 0;
+  count.forEach((cnt: number, index: number) => {
+    const sCnt = safe(cnt);
+    const sPrice = safe(price?.[index]);
+    console.log(sCnt, sPrice);
+    sum += sCnt * sPrice;
+  });
+
+  return sum;
+};
+
 const props = defineProps<{
   info: any;
   idInfo: {
@@ -186,6 +197,7 @@ const props = defineProps<{
 }>();
 
 const { info, idInfo } = toRefs(props);
+console.log("info", info);
 
 console.log("订单信息", info, idInfo);
 
@@ -195,27 +207,28 @@ const setShowPayment = (flag: boolean) => {
 
 function handlePayment() {
   const data = {
-    businessId: idInfo.value.businessId,
-    orderId: idInfo.value.orderId,
+    businessId: info.value.businessId,
+    orderId: info.value.orderId,
+    userId: userInfo.value.userId,
     orderInfo: JSON.stringify({ ...info.value, status: 30 }),
-    userId: idInfo.value.userId,
   };
   request("/order/setOrderInfo", "POST", data).then((res) => {
+    showPayment.value = false;
+    props.refresh();
     toast.success("支付成功");
-    console.log("支付成功", res);
   });
 }
 function handleComment() {
   const data = {
-    businessId: info.value.orderInfo.businessId,
-    orderId: info.value.orderInfo.orderId,
+    businessId: info.value.businessId,
+    orderId: info.value.orderId,
+    userId: userInfo.value.userId,
     orderInfo: JSON.stringify({ ...info.value, comment: comment.value }),
-    userId: info.value.orderInfo.userId,
   };
-  console.log(999, data);
   request("/order/setOrderInfo", "POST", data).then((res) => {
-    toast.success("评论成功");
     show.value = false;
+    props.refresh();
+    toast.success("评论成功，将在审核通过后展示");
   });
 }
 function confirmFinish() {
@@ -227,8 +240,8 @@ function confirmFinish() {
   };
 
   request("/order/setOrderInfo", "POST", data).then((res) => {
-    toast.success("操作成功");
     props.refresh();
+    toast.success("操作成功");
   });
 }
 // 接单

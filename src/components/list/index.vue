@@ -11,25 +11,37 @@
     </view>
 
     <view class="list-wrapper">
-      <template v-for="(item, index) in props.allOrderData" :key="index">
+      <template v-for="(item, index) in props.allOrderData" :key="item.orderId">
         <template
-          v-if="+filterValue === 0 || +item.orderInfo.status === +filterValue"
+          v-if="
+            [0, +(item?.status ?? item?.orderInfo?.status)].includes(
+              +filterValue
+            )
+          "
         >
           <!-- 
           哪些卡片才渲染呢？
           用户：所有卡片都是本人才可见
           商家：待接单的全部可见，其余仅本人可见
         -->
-          <listCard
-            :info="item"
-            :idInfo="idInfo.value"
-            :type="type"
-            :refresh="props.refresh"
-          ></listCard>
+          <template
+            v-if="
+              (type === 1 && userId === item.userId) ||
+              (type === 2 && userId === item.businessId) ||
+              (type === 2 && item.status === 10)
+            "
+          >
+            <listCard
+              :info="item"
+              :idInfo="idInfo"
+              :type="type"
+              :refresh="props.refresh"
+            ></listCard>
+          </template>
         </template>
       </template>
 
-      <view>已经没有更多了</view>
+      <view class="bottom">{{ props.isLoading ? "加载中..." : "到底了" }}</view>
     </view>
   </view>
 </template>
@@ -38,6 +50,7 @@
 import listCard from "../list-card/index.vue";
 import { ref, reactive, onMounted } from "vue";
 import { request } from "@/components/request/request";
+import { useToast } from "wot-design-uni";
 
 const ORDER_STATUS = {
   0: "全部",
@@ -50,7 +63,10 @@ const ORDER_STATUS = {
 const props = defineProps<{
   allOrderData: Array<any>;
   refresh: () => void;
+  isLoading: boolean;
 }>();
+
+const toast = useToast();
 
 const filterValue = ref<any>("0");
 // const listData = ref<Array<any>>([]);
@@ -69,6 +85,7 @@ const handleRadioClick = (key: number) => {
 
 onMounted(() => {
   filterValue.value = "0";
+  toast.loading("加载中...");
   uni.getStorage({
     key: "userInfo",
     success: function (res) {
@@ -106,6 +123,7 @@ export default {
   .list-wrapper {
     /* height: 80vh; */
     overflow: auto;
+    overflow-x: hidden;
     flex: 9;
     overflow-y: scroll;
   }
@@ -117,5 +135,10 @@ export default {
   flex-wrap: nowrap;
   justify-content: center;
   padding: 0 10px;
+}
+
+.bottom {
+  text-align: center;
+  color: #3334;
 }
 </style>

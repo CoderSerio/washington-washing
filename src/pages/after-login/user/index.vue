@@ -13,7 +13,7 @@
     <payment></payment>
   </template> -->
   <template v-else-if="routeName === 'profile'">
-    <profile :routeTo="routeTo"></profile>
+    <profile :routeTo="routeTo" :type="userInfo.type"></profile>
   </template>
 
   <template v-else>

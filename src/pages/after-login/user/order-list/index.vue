@@ -1,6 +1,10 @@
 <!-- 只显示自己的订单状态 -->
 <template>
-  <list :allOrderData="allOrderData" :refresh="refresh"></list>
+  <list
+    :allOrderData="allOrderData"
+    :refresh="refresh"
+    :isLoading="isLoading"
+  ></list>
 </template>
 
 <script setup lang="ts">
@@ -12,22 +16,33 @@ import { useToast } from "wot-design-uni";
 const toast = useToast();
 
 const allOrderData = ref<Array<any>>([]);
+const isLoading = ref(false);
 
 const refresh = () => {
-  toast.success("正在加载...");
-  const timeId = setTimeout(() => {
-    request("/order/getOrder", "GET", {}).then((res: any) => {
+  isLoading.value = true;
+  request("/order/getOrder", "GET", {})
+    .then((res: any) => {
       allOrderData.value = res.data?.map((item: any) => {
-        const data = {
+        const info = JSON.parse(item.orderInfo);
+
+        let data = {
           ...item,
-          orderInfo: JSON.parse(item.orderInfo),
         };
-        console.log("搞毛啊", data);
+
+        if (info.orderInfo) {
+          data = info;
+        } else {
+          data.orderInfo = info;
+        }
+
+        console.log("啥啊", data);
+
         return data;
       });
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
-    clearTimeout(timeId);
-  }, 2000);
 };
 
 onMounted(() => {

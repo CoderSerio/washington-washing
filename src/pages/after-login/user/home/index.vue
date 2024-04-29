@@ -23,12 +23,12 @@
     </wd-button>
 
     <wd-button
+      plain
       :round="false"
       type="error"
       @click="props.routeTo('profile')"
-      plain
     >
-      个人设置
+      个人主页
     </wd-button>
   </view>
 </template>
@@ -73,6 +73,7 @@ export default {
   :deep(.wd-button) {
     height: 120px;
     width: 90%;
+    font-size: 22px;
   }
 
   .sub-buttons {

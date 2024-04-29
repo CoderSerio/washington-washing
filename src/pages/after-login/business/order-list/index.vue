@@ -1,6 +1,10 @@
 <!-- 只显示自己的订单状态 -->
 <template>
-  <list :allOrderData="allOrderData" :refresh="refresh"></list>
+  <list
+    :allOrderData="allOrderData"
+    :refresh="refresh"
+    :isLoading="isLoading"
+  ></list>
 </template>
 
 <script setup lang="ts">
@@ -11,27 +15,35 @@ import list from "../../../../components/list/index.vue";
 const toast = useToast();
 
 const allOrderData = ref<Array<any>>([]);
+const isLoading = ref(false);
 
 const refresh = () => {
-  request("/order/getOrder", "GET", {}).then((res: any) => {
-    allOrderData.value = res.data?.map((item: any) => {
-      const info = JSON.parse(item.orderInfo);
+  isLoading.value = true;
+  request("/order/getOrder", "GET", {})
+    .then((res: any) => {
+      allOrderData.value = res.data?.map((item: any) => {
+        const info = JSON.parse(item.orderInfo);
 
-      let data = {
-        ...item,
-      };
+        let data = {
+          ...item,
+        };
 
-      if (info.orderInfo) {
-        data = info;
-      } else {
-        data.orderInfo = info;
-      }
+        if (info.orderInfo) {
+          data = info;
+        } else {
+          data.orderInfo = info;
+        }
 
-      console.log("啥啊", data);
+        data.status = info.status;
 
-      return data;
+        console.log("啥啊", data);
+
+        return data;
+      });
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
-  });
 };
 
 onMounted(() => {

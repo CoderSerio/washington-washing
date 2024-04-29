@@ -11,7 +11,7 @@
           <span>支付方式：</span>
           <wd-checkbox v-model="show" size="large"> 微信支付 </wd-checkbox>
         </div>
-        <div class="price">{{ price }}￥</div>
+        <div class="price">{{ props.price }}￥</div>
         <wd-button type="success" @click="handleClick">确认支付</wd-button>
       </view>
     </wd-action-sheet>
@@ -22,13 +22,13 @@
 import { ref, defineEmits } from "vue";
 import { useToast } from "wot-design-uni";
 const show = ref<boolean>(false);
-const price = ref<number>(20);
 const toast = useToast();
 const emit = defineEmits(["handlePayment"]);
 
 const props = defineProps<{
   show: boolean;
   setShow: (flag: boolean) => void;
+  price: number;
 }>();
 
 // function showActions() {

@@ -1,5 +1,5 @@
 <template>
-  <view class="title"> 服务定价 </view>
+  <view class="title"> 商家服务定价 </view>
   <wd-form ref="form" :model="model">
     <wd-cell-group border>
       <wd-input
@@ -31,7 +31,7 @@
       />
 
       <view class="footer">
-        <wd-button type="primary" @click="submit"> 提交 </wd-button>
+        <wd-button type="primary" @click="submit"> 更新价格 </wd-button>
       </view>
     </wd-cell-group>
   </wd-form>

@@ -11,13 +11,17 @@
         />
 
         <div class="info">
-          <div>{{ name || "获取用户名称失败" }}</div>
+          <div>
+            {{ name || "获取用户名称失败" }}({{
+              props.type === 1 ? "用户" : "商家"
+            }})
+          </div>
         </div>
       </div>
     </div>
 
     <view class="list">
-      <template vv-if="props.type === 2">
+      <template v-if="props.type === 2">
         <wd-button custom-class="list-item" @click="configureService">
           服务设置
         </wd-button>
@@ -41,6 +45,7 @@ const toast = useToast();
 
 const props = defineProps<{
   routeTo: (name: string) => void;
+  type: number;
 }>();
 
 const configureService = () => {
@@ -61,8 +66,6 @@ onMounted(() => {
     key: "userInfo",
     success: function (res) {
       console.log("res", res.data);
-      // const washInfo = JSON.parse(res.data?.washInfo ?? {});
-      // const wxInfo = JSON.parse(res.data?.wxInfo ?? {});
 
       name.value = res.data.value1 || "获取用户数据失败";
       imgUrl.value = res.data.avater || "";
