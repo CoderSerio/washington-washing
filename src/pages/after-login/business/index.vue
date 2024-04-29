@@ -5,7 +5,7 @@
     </template>
 
     <template v-else-if="routeName === 'profile'">
-      <profile></profile>
+      <profile :routeTo="routeTo"></profile>
     </template>
 
     <template v-else-if="routeName === 'config-info'">
@@ -44,6 +44,6 @@ onMounted(() => {
 
 <style scoped>
 .business-wrapper {
-  height: 100%;
+  height: calc(100% - 120px);
 }
 </style>

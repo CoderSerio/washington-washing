@@ -15,9 +15,21 @@
         <template
           v-if="+filterValue === 0 || +item.orderInfo.status === +filterValue"
         >
-          <listCard :info="item" :idInfo="idInfo.value" :type="type"></listCard>
+          <!-- 
+          哪些卡片才渲染呢？
+          用户：所有卡片都是本人才可见
+          商家：待接单的全部可见，其余仅本人可见
+        -->
+          <listCard
+            :info="item"
+            :idInfo="idInfo.value"
+            :type="type"
+            :refresh="props.refresh"
+          ></listCard>
         </template>
       </template>
+
+      <view>已经没有更多了</view>
     </view>
   </view>
 </template>
@@ -37,15 +49,16 @@ const ORDER_STATUS = {
 
 const props = defineProps<{
   allOrderData: Array<any>;
+  refresh: () => void;
 }>();
 
-const filterValue = ref(0);
-const listData = ref<Array<any>>([]);
+const filterValue = ref<any>("0");
+// const listData = ref<Array<any>>([]);
 const idInfo = reactive<any>({
   value: {},
 });
 
-let userId: any = null;
+let userId: any = ref<number>();
 // 0 无效身份（请求中） 1 用户 2 商家
 const type = ref<0 | 1 | 2>(0);
 
@@ -55,16 +68,12 @@ const handleRadioClick = (key: number) => {
 };
 
 onMounted(() => {
+  filterValue.value = "0";
   uni.getStorage({
     key: "userInfo",
     success: function (res) {
-      userId = res.data.userId;
+      userId.value = res.data.userId;
       type.value = res.data.value3;
-
-      // listData.value = props.allOrderData.filter((item) => {
-      //   console.log('item')
-      //   return true
-      // })
     },
   });
 });
@@ -81,17 +90,24 @@ export default {
 <style scoped lang="scss">
 .page-wrapper {
   background-color: #eee;
-  height: 90%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-bottom: 80px;
+  height: 92vh;
+  width: 100%;
 
   .filter-wrapper {
-    margin: 10px 8px;
+    /* margin: 10px 8px; */
+    flex: 1;
+  }
+
+  .list-wrapper {
+    /* height: 80vh; */
+    overflow: auto;
+    flex: 9;
+    overflow-y: scroll;
   }
 }
 

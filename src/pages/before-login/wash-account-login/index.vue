@@ -75,6 +75,7 @@ function handleSubmit() {
     .then(({ valid, errors }: any) => {
       if (valid) {
         console.log("ok", model);
+        toast.loading("加载中...");
         request("/user/getUser", "GET", {}).then((res: any) => {
           console.log("获取用户成功");
           const userInfo: any[] = [];

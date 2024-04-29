@@ -8,34 +8,28 @@
   ></wd-swiper>
 
   <view class="buttons">
-    <view class="main-buttons">
-      <wd-button :round="false" @click="props.routeTo('order-publish')" block>
-        开始洗衣
-      </wd-button>
-    </view>
+    <wd-button :round="false" @click="props.routeTo('order-publish')" block>
+      开始洗衣
+    </wd-button>
 
-    <view class="sub-buttons">
-      <view class="left">
-        <wd-button :round="false" type="error" plain> 活动公告 </wd-button>
-        <wd-button
-          :round="false"
-          type="error"
-          @click="props.routeTo('profile')"
-          plain
-          >个人设置</wd-button
-        >
-      </view>
+    <!-- <wd-button :round="false" type="error" plain> 活动公告 </wd-button> -->
 
-      <view class="right">
-        <wd-button
-          :round="false"
-          type="success"
-          @click="props.routeTo('order-list')"
-        >
-          我的订单
-        </wd-button>
-      </view>
-    </view>
+    <wd-button
+      :round="false"
+      type="success"
+      @click="props.routeTo('order-list')"
+    >
+      我的订单
+    </wd-button>
+
+    <wd-button
+      :round="false"
+      type="error"
+      @click="props.routeTo('profile')"
+      plain
+    >
+      个人设置
+    </wd-button>
   </view>
 </template>
 
@@ -43,11 +37,8 @@
 import { ref } from "vue";
 
 const swiperList = ref([
-  "https://unpkg.com/wot-design-uni-assets/redpanda.jpg",
-  "https://unpkg.com/wot-design-uni-assets/capybara.jpg",
-  "https://unpkg.com/wot-design-uni-assets/panda.jpg",
-  "https://img.yzcdn.cn/vant/cat.jpeg",
-  "https://unpkg.com/wot-design-uni-assets/meng.jpg",
+  "https://imgwcszq.soufunimg.com/699pic/201903/05/139/7666361f08cae4cc1fddb02e84b90934.jpg",
+  "https://www.lijingganxi.com/static/upload/image/20211130/1638240445915510.jpg",
 ]);
 
 const props = defineProps<{
@@ -77,12 +68,11 @@ export default {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
 
-  .main-buttons {
-    :deep(.wd-button) {
-      height: 120px;
-    }
+  :deep(.wd-button) {
+    height: 120px;
+    width: 90%;
   }
 
   .sub-buttons {

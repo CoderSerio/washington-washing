@@ -39,6 +39,7 @@ onLoad(() => {
 });
 
 function weixinLogin() {
+  toast.info("正在请求...");
   uni.login({
     provider: "weixin",
     onlyAuthorize: true, // 微信登录仅请求授权认证
@@ -49,22 +50,40 @@ function weixinLogin() {
       const data = {
         code: code,
       };
+      toast.info("正在获取微信令牌...");
       request("/user/bind", "POST", data).then((resolve: any) => {
         const res = JSON.parse(resolve.data);
-        console.log(res);
-        getUsers().then((users: any) => {
+        toast.info("正在获取微信信息...");
+        request("/user/getUser", "GET", {}).then((users: any) => {
           const userInfo: any[] = [];
+          toast.info("正在解析...");
           for (let i of users.data) {
-            userInfo.push({ ...JSON.parse(i.wxInfo), type: i.type });
+            const item = {
+              ...i,
+              ...JSON.parse(i.wxInfo),
+              ...JSON.parse(i.washInfo),
+            };
+            userInfo.push(item);
           }
-
+          toast.info("正在查询...");
           let isHave = false;
-          for (let i of userInfo) {
+          for (let index = 0; index < userInfo.length; index++) {
+            const i = userInfo[index];
             if (i.openid === res.openid) {
-              toast.success("登录成功");
+              console.log("i", i);
+              const data = Object.assign(i, users.data[index]);
+              // { ...users.data[index], ...i };
+              uni.setStorage({
+                key: "userInfo",
+                data,
+                success: function () {
+                  console.log("用户信息已经存储", data);
+                },
+              });
+              toast.success("登录成功, 即将跳转");
               setTimeout(() => {
                 uni.redirectTo({ url: "../after-login/index" });
-              }, 1000);
+              }, 2000);
               isHave = true;
             }
           }

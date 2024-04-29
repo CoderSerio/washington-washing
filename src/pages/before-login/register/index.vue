@@ -4,10 +4,25 @@
     <view class="form">
       <wd-form ref="form" :model="model">
         <wd-cell-group border>
-          <wd-input label="用户名" label-width="100px" prop="value1" clearable v-model="model.value1" placeholder="请输入用户名"
-            required />
-          <wd-input label="密码" label-width="100px" prop="value2" show-password clearable v-model="model.value2"
-            placeholder="请输入密码" :rules="[{ required: true, message: '请填写密码' }]" />
+          <wd-input
+            label="用户名"
+            label-width="100px"
+            prop="value1"
+            clearable
+            v-model="model.value1"
+            placeholder="请输入用户名"
+            required
+          />
+          <wd-input
+            label="密码"
+            label-width="100px"
+            prop="value2"
+            show-password
+            clearable
+            v-model="model.value2"
+            placeholder="请输入密码"
+            :rules="[{ required: true, message: '请填写密码' }]"
+          />
 
           <view class="radio-group">
             <view class="radio-label">账号类型</view>
@@ -16,14 +31,31 @@
               <wd-radio :value="2">商家</wd-radio>
             </wd-radio-group>
           </view>
-          <button open-type="chooseAvatar" @chooseavatar="handleAvater"> 微信头像获取 </button>
+
+          <button
+            class="submit-button"
+            open-type="chooseAvatar"
+            @chooseavatar="handleAvater"
+          >
+            关联微信并注册
+          </button>
         </wd-cell-group>
 
         <view class="footer">
-          <wd-button custom-class="submit-button" type="primary" block @click="handleSubmit">
+          <!-- <wd-button
+            custom-class="submit-button"
+            type="primary"
+            block
+            @click="handleSubmit"
+          >
             绑定微信并注册
-          </wd-button>
-          <wd-button custom-class="back-button" type="info" block @click="props.changeStep('init')">
+          </wd-button> -->
+          <wd-button
+            custom-class="back-button"
+            type="info"
+            block
+            @click="props.changeStep('init')"
+          >
             返回
           </wd-button>
         </view>
@@ -35,20 +67,20 @@
 
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from "vue";
-import { request } from '@/components/request/request'
-import { useToast } from 'wot-design-uni'
+import { request } from "@/components/request/request";
+import { useToast } from "wot-design-uni";
 
-const toast = useToast()
+const toast = useToast();
 const props = defineProps<{
-  openid: string
+  openid: string;
   changeStep: (step: string) => void;
 }>();
 const wxInfo = reactive<{
-  avater: string,
-  openid: string
+  avater: string;
+  openid: string;
 }>({
   avater: "",
-  openid: ""
+  openid: "",
 });
 const model = reactive<{
   value1: string;
@@ -63,7 +95,7 @@ const model = reactive<{
 const form = ref();
 
 function handleSubmit() {
-  toast.loading('加载中...')
+  toast.loading("加载中...");
   if (props.openid)
     form.value
       .validate()
@@ -73,17 +105,18 @@ function handleSubmit() {
           const Data = JSON.stringify(model);
 
           const data = {
-            "wxInfo": JSON.stringify(wxInfo),
-            "type": model.value3,
-            "washInfo": Data
+            wxInfo: JSON.stringify(wxInfo),
+            type: model.value3,
+            washInfo: Data,
           };
-          request('/user/createUser', 'POST', data).then((res) => {
-            toast.success('注册成功!正在跳转……')
-            console.log('注册成功', res)
+          toast.loading("正在创建用户...");
+          request("/user/createUser", "POST", data).then((res) => {
+            toast.success("注册成功!正在跳转……");
+            console.log("注册成功", res);
             setTimeout(() => {
-              props.changeStep('account-login')
-            }, 1000)
-          })
+              props.changeStep("account-login");
+            }, 1000);
+          });
         }
       })
       .catch((error: Error) => {
@@ -91,36 +124,41 @@ function handleSubmit() {
       });
 }
 function handleAvater(res: any) {
-  wxInfo.avater = res.detail.avatarUrl;
+  if (model.value1 && model.value2 && model.value3) {
+    wxInfo.avater = res.detail.avatarUrl;
+    handleSubmit();
+  } else {
+    toast.error("请先填写信息");
+  }
 }
 onMounted(() => {
   console.log(props.openid);
   if (props.openid != "0") {
     wxInfo.openid = props.openid;
-    toast.info('注册账户后即可微信登录~')
+    toast.info("注册账户后即可微信登录~");
   } else {
     uni.login({
-      "provider": "weixin",
-      "onlyAuthorize": true, // 微信登录仅请求授权认证
+      provider: "weixin",
+      onlyAuthorize: true, // 微信登录仅请求授权认证
       success: function (event) {
-        const { code } = event
+        const { code } = event;
         //客户端成功获取授权临时票据（code）,向业务服务器发起登录请求。
         const data = {
-          "code": code
-        }
-        request('/user/bind', 'POST', data).then((resolve: any) => {
-          const res = JSON.parse(resolve.data)
-          console.log(res.openid)
+          code: code,
+        };
+        request("/user/bind", "POST", data).then((resolve: any) => {
+          const res = JSON.parse(resolve.data);
+          console.log(res.openid);
           wxInfo.openid = res.openid;
-        })
+        });
       },
       fail: function (err) {
         // 登录授权失败
         // err.code是错误码
-      }
-    })
+      },
+    });
   }
-})
+});
 </script>
 
 <script lang="ts">
@@ -176,14 +214,12 @@ export default {
   align-items: center;
   gap: 20px;
 
-  :deep(.submit-button) {
-    width: 80%;
-    height: 48px !important;
-  }
-
   :deep(.back-button) {
-    width: 80%;
+    width: 100%;
     height: 48px !important;
+    border-radius: 4px !important;
+    border: 1px solid #3333;
+    font-size: 24px;
   }
 }
 </style>

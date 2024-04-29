@@ -2,20 +2,51 @@
   <view class="title"> 发布订单 </view>
   <wd-form ref="form" :model="model">
     <wd-cell-group border>
-      <wd-input label="用户名" label-width="100px" prop="name" clearable v-model="model.washId" placeholder="请输入ID" />
+      <wd-input
+        label="地点"
+        label-width="100px"
+        prop="name"
+        clearable
+        v-model="model.location"
+        placeholder="请输入地点"
+      />
 
-      <wd-input label="地点" label-width="100px" prop="name" clearable v-model="model.location" placeholder="请输入地点" />
+      <wd-input
+        label="联系方式"
+        label-width="100px"
+        prop="name"
+        clearable
+        v-model="model.phoneNumber"
+        placeholder="请输入联系方式"
+      />
 
-      <wd-input label="联系方式" label-width="100px" prop="name" clearable v-model="model.phoneNumber"
-        placeholder="请输入联系方式" />
+      <wd-input
+        label="西装数量"
+        label-width="100px"
+        clearable
+        v-model="model.suitNumber"
+      />
 
-      <wd-input label="西装数量" label-width="100px" clearable v-model="model.suitNumber" />
+      <wd-input
+        label="皮衣数量"
+        label-width="100px"
+        clearable
+        v-model="model.leatherNumber"
+      />
 
-      <wd-input label="皮衣数量" label-width="100px" clearable v-model="model.leatherNumber" />
+      <wd-input
+        label="棉衣数量"
+        label-width="100px"
+        clearable
+        v-model="model.cottonNumber"
+      />
 
-      <wd-input label="棉衣数量" label-width="100px" clearable v-model="model.cottonNumber" />
-
-      <wd-input label="化纤数量" label-width="100px" clearable v-model="model.syntheticNumber" />
+      <wd-input
+        label="化纤数量"
+        label-width="100px"
+        clearable
+        v-model="model.syntheticNumber"
+      />
 
       <view class="footer">
         <wd-button type="primary" @click="submit"> 提交 </wd-button>
@@ -27,14 +58,14 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import { request } from '@/components/request/request'
-import { useToast } from 'wot-design-uni'
+import { request } from "@/components/request/request";
+import { useToast } from "wot-design-uni";
 
-const toast = useToast()
+const toast = useToast();
 const CLOTHE_TYPE = ["西装", "皮衣", "棉衣", "化纤"];
 const props = defineProps<{
-  routeTo: (name: string) => void
-}>()
+  routeTo: (name: string) => void;
+}>();
 const model = reactive<{
   clotheCount: Array<number>;
   washId: string;
@@ -56,14 +87,13 @@ const model = reactive<{
   cottonNumber: 0,
   syntheticNumber: 0,
   status: 10,
-  comment: ''
+  comment: "",
 });
 
 const form = ref();
 
-
 const submit = () => {
-  toast.loading('加载中...')
+  toast.loading("加载中...");
   form.value.validate().then(({ valid, errors }: any) => {
     if (valid) {
       // 通过
@@ -71,25 +101,25 @@ const submit = () => {
       model.clotheCount[1] = Number(model.leatherNumber);
       model.clotheCount[2] = Number(model.cottonNumber);
       model.clotheCount[3] = Number(model.syntheticNumber);
-      const orderData = JSON.stringify(model)
+      const orderData = JSON.stringify(model);
       uni.getStorage({
-        key: 'userInfo',
+        key: "userInfo",
         success: function (res) {
-          console.log(res.data);
-          const data = {
-            "userId": res.data.userId,
-            "businessId": 0,
-            "orderInfo": orderData
-          }
-          request('/order/createOrder', 'POST', data).then((res) => {
-            toast.success("添加成功")
-            setTimeout(() => {
-              props.routeTo('home')
-            }, 1000)
-          })
-        }
-      })
+          console.log("到底怎么回事呢", res.data);
 
+          const data = {
+            userId: res.data.userId,
+            businessId: 0,
+            orderInfo: orderData,
+          };
+          request("/order/createOrder", "POST", data).then((res) => {
+            toast.success("添加成功");
+            setTimeout(() => {
+              props.routeTo("home");
+            }, 1000);
+          });
+        },
+      });
     }
   });
 };
@@ -111,7 +141,8 @@ export default {
   margin-bottom: 20px;
 }
 
-.add-button {}
+.add-button {
+}
 
 .footer {
   width: 100%;

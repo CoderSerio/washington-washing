@@ -9,8 +9,9 @@
           mode="aspectFill"
           :src="imgUrl"
         />
+
         <div class="info">
-          <div>{{ name }}</div>
+          <div>{{ name || "获取用户名称失败" }}</div>
         </div>
       </div>
     </div>
@@ -27,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import { onLoad } from "@dcloudio/uni-app";
 import { onMounted, ref } from "vue";
 import { useToast } from "wot-design-uni";
 const name = ref<string>("我是xxx");
@@ -37,7 +39,13 @@ const imgUrl = ref<string>(
 );
 const toast = useToast();
 
-const configureService = () => {};
+const props = defineProps<{
+  routeTo: (name: string) => void;
+}>();
+
+const configureService = () => {
+  props.routeTo("config-info");
+};
 
 const logout = () => {
   toast.success("注销成功");
@@ -46,13 +54,18 @@ const logout = () => {
     uni.redirectTo({ url: "../../pages/before-login/index" });
   }, 1200);
 };
+
 onMounted(() => {
+  console.log("啥时候触发的啊");
   uni.getStorage({
     key: "userInfo",
     success: function (res) {
       console.log("res", res.data);
-      name.value = res.data.value1;
-      imgUrl.value = res.data.avater;
+      // const washInfo = JSON.parse(res.data?.washInfo ?? {});
+      // const wxInfo = JSON.parse(res.data?.wxInfo ?? {});
+
+      name.value = res.data.value1 || "获取用户数据失败";
+      imgUrl.value = res.data.avater || "";
     },
   });
 });

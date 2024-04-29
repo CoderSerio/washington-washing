@@ -9,8 +9,8 @@ interface requestPrams {
 export function request(api: string, method: string, data: object) {
   const useMethod = method === "POST" ? "POST" : "GET";
   const url = api.startsWith("/user")
-    ? "https://42.202.37.75:63701"
-    : "https://42.202.37.75:17255";
+    ? "http://localhost:8082"
+    : "http://localhost:8081";
 
   return new Promise((resolve, rej) => {
     const config = {

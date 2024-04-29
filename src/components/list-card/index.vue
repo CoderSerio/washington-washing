@@ -1,9 +1,15 @@
 <template>
   <template>
     <view class="card-wrapper">
-      {{ userInfo }}
+      <view>
+        userInfo:
+        {{ userInfo }}
+      </view>
       ——————————
-      {{ info }}
+      <view>
+        info:
+        {{ info }}
+      </view>
       <wd-card type="rectangle">
         <template #title>
           <view class="header">
@@ -30,9 +36,14 @@
                     <view class="goods-name">{{ CLOTHE_TYPE[index] }}</view>
                     <view class="goods-count"> (x{{ cnt }}) </view>
                   </view>
-                  <view class="goods-price"
-                    >{{ info.orderInfo.price?.[index] ?? "--" }}元</view
-                  >
+                  <view class="goods-price">
+                    {{
+                      info.orderInfo?.clotheCount?.[index] ??
+                      0 * userInfo?.price?.[index] ??
+                      0 ??
+                      "--"
+                    }}元
+                  </view>
                 </view>
               </template>
             </template>
@@ -61,7 +72,18 @@
         <template #footer>
           <view class="footer">
             <view class="total-price">
-              总计:{{ info.orderInfo?.totalPrice ?? "--" }}元
+              总计:{{
+                info.orderInfo?.clotheCount?.[0] ??
+                0 * userInfo?.price?.[0] ??
+                0 + info.orderInfo?.clotheCount?.[1] ??
+                0 * userInfo?.price?.[1] ??
+                0 + info.orderInfo?.clotheCount?.[2] ??
+                0 * userInfo?.price?.[2] ??
+                0 + info.orderInfo?.clotheCount?.[3] ??
+                0 * userInfo.price?.[3] ??
+                0 ??
+                "--"
+              }}元
             </view>
             <view class="buttons">
               <!-- 接单：status 待接单 && 商家-->
@@ -134,7 +156,6 @@
 </template>
 
 <script setup lang="ts">
-// TODO：要请求商家报价列表
 import { onMounted, reactive, ref, toRefs } from "vue";
 import { request } from "../../components/request/request";
 import { useToast } from "wot-design-uni";
@@ -161,6 +182,7 @@ const props = defineProps<{
     businessId: number;
   };
   type: 0 | 1 | 2;
+  refresh: () => void;
 }>();
 
 const { info, idInfo } = toRefs(props);
@@ -198,13 +220,15 @@ function handleComment() {
 }
 function confirmFinish() {
   const data = {
-    businessId: info.value.orderInfo.businessId,
+    businessId: info.value.businessId,
     orderId: info.value.orderId,
     orderInfo: JSON.stringify({ ...info.value, status: 40 }),
-    userId: info.value.orderInfo.userId,
+    userId: info.value.userId,
   };
+
   request("/order/setOrderInfo", "POST", data).then((res) => {
     toast.success("操作成功");
+    props.refresh();
   });
 }
 // 接单
@@ -216,24 +240,29 @@ function deal() {
       const price = userInfo.value?.price ?? [10, 10, 10, 10];
       const computedPrice = price.map((p: number, index: number) => {
         return p * (info.value?.orderInfo?.clotheCount[index] ?? 0);
-      });
+      }); // 单项的价格
 
       const data = {
-        userId: info.value.orderInfo.userId,
+        userId: info.value.userId,
         businessId: userInfo.value?.userId,
-        orderId: info.value?.orderInfo?.orderId,
+        orderId: info.value.orderId,
         orderInfo: JSON.stringify({
           ...info.value,
           status: 20,
           price: computedPrice,
+          businessId: userInfo.value?.userId,
           totalPrice: computedPrice.reduce(
             (sum: number, i: number) => (sum += i),
             0
           ),
         }),
       };
+
+      console.log("data", data);
+
       request("/order/setOrderInfo", "POST", data).then((res) => {
-        toast.success("操作成功");
+        toast.success("接单成功");
+        props.refresh();
         console.log("res", res);
       });
     },
