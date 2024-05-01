@@ -6,7 +6,13 @@
           <view class="header">
             <view class="time">{{ info?.orderInfo?.date ?? "" }}</view>
             <!-- TODO: 加个颜色 -->
-            <view class="status">
+            <view
+              class="status"
+              :style="{
+                color:
+                  STATUS_COLOR[`${info?.status || info?.orderInfo?.status}`],
+              }"
+            >
               {{
                 ORDER_STATUS[`${info?.status || info?.orderInfo?.status}`] ??
                 "未知"
@@ -15,7 +21,6 @@
           </view>
         </template>
 
-        {{ info }}
         <view class="content">
           <view class="goods-list">
             <template
@@ -121,7 +126,11 @@
 
               <template v-else-if="info.status === 40">
                 <template
-                  v-if="info.orderInfo.comment === '' && props.type === 1"
+                  v-if="
+                    info.comment === '' &&
+                    info.orderInfo.comment === '' &&
+                    props.type === 1
+                  "
                 >
                   <wd-button
                     size="small"
@@ -134,7 +143,7 @@
                 </template>
                 <template v-else>
                   <view class="comment">
-                    {{ info.orderInfo.comment }}
+                    {{ info.comment || info.orderInfo.comment }}
                   </view>
                 </template>
               </template>
@@ -163,6 +172,13 @@ const ORDER_STATUS = {
   30: "处理中",
   40: "已完成",
 };
+const STATUS_COLOR = {
+  10: "skyblue",
+  20: "#ff3700",
+  30: "lightgreen",
+  40: "gray",
+};
+
 const showPayment = ref<boolean>(false);
 const userInfo = ref<any>(null);
 
@@ -304,6 +320,7 @@ export default {
 .card-wrapper {
   width: 90vw;
   border-radius: 8px;
+  padding-bottom: 20px;
 
   :deep(.wd-card) {
     /* background-color: red; */
@@ -369,15 +386,11 @@ export default {
 }
 
 .comment {
-  position: fix;
-  margin-top: 50%;
-  display: flex;
-  gap: 30px;
-  padding: 10px;
-  height: 100px;
-  justify-content: center;
-  align-items: center;
-  background-color: #fff;
+  width: 220px;
+  height: 320px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis; //超出省略号
 }
 
 .buttons {
